@@ -1,0 +1,14 @@
+# Build directory
+out/
+build/
+
+# Editor files
+.vs/
+
+# Perf data
+perf.data
+perf.data.old
+
+# Language server
+.cache/
+compile_commands.json
