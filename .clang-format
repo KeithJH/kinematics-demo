@@ -1,2 +1,3 @@
 BasedOnStyle: Microsoft
 UseTab: AlignWithSpaces
+AllowShortFunctionsOnASingleLine: true
