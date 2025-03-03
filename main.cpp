@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <vector>
 
 namespace kinematics
 {
@@ -13,55 +14,70 @@ struct Body
 	Color color;
 };
 
-/// Describes how the simulated "world" behaves. Currently this includes a singular `Body` that bounces around the
-/// screen.
+/// Describes how the simulated "world" behaves. This includes multiple `Body` objects that bounce around the screen.
 class Simulation
 {
   public:
 	/// Create a simulation bounded with the given `width` and `height`.
 	/// Note: This uses random numbers and as such the random seed should be set prior to calling, either directly with
 	/// `SetRandomSeed(...)` or indirectly with `InitWindow(...)`
-	Simulation(const int width, const int height) : _width(width), _height(height)
+	/// @param width Width of the environment to create
+	/// @param height Height of the environment to create
+	/// @param numBodies The number of bodies to initially add to the simulation
+	Simulation(const int width, const int height, const size_t numBodies) : _width(width), _height(height)
 	{
-		// Random starting position of body that is in bounds
-		_body.x = GetRandomValue(BODY_RADIUS, _width - BODY_RADIUS);
-		_body.y = GetRandomValue(BODY_RADIUS, _height - BODY_RADIUS);
+		// Add `numBodies` bodies to the simulation
+		_bodies.reserve(numBodies);
+		for (auto i = 0; i < numBodies; i++)
+		{
+			Body body;
 
-		// Random starting speeds of body
-		_body.horizontalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
-		_body.verticalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+			// Random starting position of a body that is in bounds
+			body.x = GetRandomValue(BODY_RADIUS, _width - BODY_RADIUS);
+			body.y = GetRandomValue(BODY_RADIUS, _height - BODY_RADIUS);
 
-		// Random (non-transparent) color of body
-		_body.color = {static_cast<unsigned char>(GetRandomValue(0, 255)),
-		               static_cast<unsigned char>(GetRandomValue(0, 255)),
-		               static_cast<unsigned char>(GetRandomValue(0, 255)), 255};
+			// Random starting speeds of body
+			body.horizontalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+			body.verticalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+
+			// Random (non-transparent) color of body
+			body.color = {static_cast<unsigned char>(GetRandomValue(0, 255)),
+			              static_cast<unsigned char>(GetRandomValue(0, 255)),
+			              static_cast<unsigned char>(GetRandomValue(0, 255)), 255};
+
+			_bodies.push_back(body);
+		}
 	}
 
 	/// Progress the simulation by `deltaTime` seconds
+	/// @param deltaTime Time in seconds to progress the simulation
 	void Update(const float deltaTime)
 	{
-		// Update position based on speed
-		_body.x += _body.horizontalSpeed * deltaTime;
-		_body.y += _body.verticalSpeed * deltaTime;
+		for (auto &body : _bodies)
+		{
+			// Update position based on speed
+			body.x += body.horizontalSpeed * deltaTime;
+			body.y += body.verticalSpeed * deltaTime;
 
-		// Bounce horizontally
-		if (_body.x - BODY_RADIUS < 0 && _body.horizontalSpeed < 0)
-		{
-			_body.horizontalSpeed *= -1;
-		}
-		else if (_body.x + BODY_RADIUS > _width && _body.horizontalSpeed > 0)
-		{
-			_body.horizontalSpeed *= -1;
-		}
+			// Bounce horizontally
+			if (body.x - BODY_RADIUS < 0 && body.horizontalSpeed < 0)
+			{
+				body.horizontalSpeed *= -1;
+			}
+			else if (body.x + BODY_RADIUS > _width && body.horizontalSpeed > 0)
+			{
+				body.horizontalSpeed *= -1;
+			}
 
-		// Bounce vertically
-		if (_body.y - BODY_RADIUS < 0 && _body.verticalSpeed < 0)
-		{
-			_body.verticalSpeed *= -1;
-		}
-		else if (_body.y + BODY_RADIUS > _height && _body.verticalSpeed > 0)
-		{
-			_body.verticalSpeed *= -1;
+			// Bounce vertically
+			if (body.y - BODY_RADIUS < 0 && body.verticalSpeed < 0)
+			{
+				body.verticalSpeed *= -1;
+			}
+			else if (body.y + BODY_RADIUS > _height && body.verticalSpeed > 0)
+			{
+				body.verticalSpeed *= -1;
+			}
 		}
 	}
 
@@ -69,12 +85,15 @@ class Simulation
 	void Draw() const
 	{
 		// TODO: avoid recalculating a circle every time
-		DrawCircle(_body.x, _body.y, BODY_RADIUS, _body.color);
+		for (auto &body : _bodies)
+		{
+			DrawCircle(body.x, body.y, BODY_RADIUS, body.color);
+		}
 	}
 
   private:
 	int _width, _height;
-	Body _body;
+	std::vector<Body> _bodies;
 };
 } // namespace kinematics
 
@@ -98,7 +117,7 @@ int main(void)
 	InitWindow(800, 600, "Kinematics Demo");
 	SetTargetFPS(60);
 
-	kinematics::Simulation sim(800, 600);
+	kinematics::Simulation sim(800, 600, 10);
 	while (!WindowShouldClose())
 	{
 		sim.Update(GetFrameTime());
