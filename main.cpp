@@ -1,3 +1,4 @@
+#include <chrono>
 #include <raylib.h>
 #include <vector>
 
@@ -37,6 +38,8 @@ class Simulation
 		EndTextureMode();
 	}
 
+	~Simulation() { UnloadRenderTexture(_bodyRender); }
+
 	/// Progress the simulation by `deltaTime` seconds
 	/// @param deltaTime Time in seconds to progress the simulation
 	void Update(const float deltaTime)
@@ -72,7 +75,7 @@ class Simulation
 	/// Draw contents to the screen
 	void Draw() const
 	{
-		for (auto &body : _bodies)
+		for (const auto &body : _bodies)
 		{
 			DrawTexture(_bodyRender.texture, body.x - BODY_RADIUS, body.y - BODY_RADIUS, body.color);
 		}
@@ -134,61 +137,159 @@ class Simulation
 };
 } // namespace kinematics
 
-/// Update the simulation according to user input. Currently used to set the number of bodies.
-void HandleInput(kinematics::Simulation &sim)
+class App
 {
-	constexpr size_t SMALL_COUNT = 1;
-	constexpr size_t MEDIUM_COUNT = 1'000;
-	constexpr size_t LARGE_COUNT = 100'000;
+  public:
+	App(const int width, const int height, const int initialNumBodies) : _simulation(width, height, initialNumBodies) {}
 
-	// Small
-	if (IsKeyPressed(KEY_ONE)) sim.SetNumBodies(1 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_TWO)) sim.SetNumBodies(2 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_THREE)) sim.SetNumBodies(3 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_FOUR)) sim.SetNumBodies(4 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_FIVE)) sim.SetNumBodies(5 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_SIX)) sim.SetNumBodies(6 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_SEVEN)) sim.SetNumBodies(7 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_EIGHT)) sim.SetNumBodies(8 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_NINE)) sim.SetNumBodies(9 * SMALL_COUNT);
-	else if (IsKeyPressed(KEY_ZERO)) sim.SetNumBodies(10 * SMALL_COUNT);
+	void Update()
+	{
+		_frameTimeSeconds = GetFrameTime();
+		HandleInput();
 
-	// Medium
-	if (IsKeyPressed(KEY_KP_1)) sim.SetNumBodies(1 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_2)) sim.SetNumBodies(2 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_3)) sim.SetNumBodies(3 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_4)) sim.SetNumBodies(4 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_5)) sim.SetNumBodies(5 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_6)) sim.SetNumBodies(6 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_7)) sim.SetNumBodies(7 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_8)) sim.SetNumBodies(8 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_9)) sim.SetNumBodies(9 * MEDIUM_COUNT);
-	else if (IsKeyPressed(KEY_KP_0)) sim.SetNumBodies(10 * MEDIUM_COUNT);
+		if (IsWindowResized())
+		{
+			_simulation.SetBounds(GetScreenWidth(), GetScreenHeight());
+		}
 
-	// Large
-	if (IsKeyPressed(KEY_F1)) sim.SetNumBodies(1 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F2)) sim.SetNumBodies(2 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F3)) sim.SetNumBodies(3 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F4)) sim.SetNumBodies(4 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F5)) sim.SetNumBodies(5 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F6)) sim.SetNumBodies(6 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F7)) sim.SetNumBodies(7 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F8)) sim.SetNumBodies(8 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F9)) sim.SetNumBodies(9 * LARGE_COUNT);
-	else if (IsKeyPressed(KEY_F10)) sim.SetNumBodies(10 * LARGE_COUNT);
-}
+		if (_updateBodies)
+		{
+			auto startUpdateTime = std::chrono::steady_clock::now();
+			_simulation.Update(_frameTimeSeconds);
+			auto endUpdateTime = std::chrono::steady_clock::now();
 
-/// Top level draw function for the entire scene.
-/// Includes: Background, FPS counter and `Simulation` contents.
-void DrawFrame(kinematics::Simulation &sim)
+			_updateMicroseconds =
+				std::chrono::duration_cast<std::chrono::microseconds>(endUpdateTime - startUpdateTime).count();
+		}
+	}
+
+	/// Top level draw function for the entire scene.
+	/// Includes: Background, FPS counter, statistics and `Simulation` contents.
+	void DrawFrame() const
+	{
+		BeginDrawing();
+		ClearBackground(BEIGE);
+
+		if (_renderBodies)
+		{
+			_simulation.Draw();
+		}
+
+		if (_renderStats)
+		{
+			constexpr int SECONDS_TO_MICROS = 1'000'000;
+
+			DrawRectangle(10, 10, 400, 150, DARKGRAY);
+			DrawText(TextFormat("Bodies:\t%d\nFrame  Time (us):\t%.0f\nUpdate Time (us):\t%ld\nRender "
+			                    "Bodies:\t%d\nUpdate Bodies:\t%d",
+			                    _simulation.GetNumBodies(), _frameTimeSeconds * SECONDS_TO_MICROS, _updateMicroseconds,
+			                    _renderBodies, _updateBodies),
+			         20, 40, 20, WHITE);
+		}
+
+		DrawFPS(15, 15);
+		EndDrawing();
+	}
+
+  private:
+	bool _renderBodies = true, _renderStats = false;
+	bool _updateBodies = true;
+	kinematics::Simulation _simulation;
+
+	float _frameTimeSeconds;
+	long _updateMicroseconds;
+
+	/// Update the simulation according to user input.
+	/// Includes: Toggle for rendering bodies, toggle for updating bodies, setting number of bodies
+	void HandleInput()
+	{
+		if (IsKeyPressed(KEY_R))
+			_renderBodies = !_renderBodies;
+		if (IsKeyPressed(KEY_S))
+			_renderStats = !_renderStats;
+		if (IsKeyPressed(KEY_U))
+			_updateBodies = !_updateBodies;
+
+		constexpr size_t SMALL_COUNT = 1;
+		constexpr size_t MEDIUM_COUNT = 1'000;
+		constexpr size_t LARGE_COUNT = 100'000;
+
+		// Small
+		if (IsKeyPressed(KEY_ONE))
+			_simulation.SetNumBodies(1 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_TWO))
+			_simulation.SetNumBodies(2 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_THREE))
+			_simulation.SetNumBodies(3 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_FOUR))
+			_simulation.SetNumBodies(4 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_FIVE))
+			_simulation.SetNumBodies(5 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_SIX))
+			_simulation.SetNumBodies(6 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_SEVEN))
+			_simulation.SetNumBodies(7 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_EIGHT))
+			_simulation.SetNumBodies(8 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_NINE))
+			_simulation.SetNumBodies(9 * SMALL_COUNT);
+		else if (IsKeyPressed(KEY_ZERO))
+			_simulation.SetNumBodies(10 * SMALL_COUNT);
+
+		// Medium
+		if (IsKeyPressed(KEY_KP_1))
+			_simulation.SetNumBodies(1 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_2))
+			_simulation.SetNumBodies(2 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_3))
+			_simulation.SetNumBodies(3 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_4))
+			_simulation.SetNumBodies(4 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_5))
+			_simulation.SetNumBodies(5 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_6))
+			_simulation.SetNumBodies(6 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_7))
+			_simulation.SetNumBodies(7 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_8))
+			_simulation.SetNumBodies(8 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_9))
+			_simulation.SetNumBodies(9 * MEDIUM_COUNT);
+		else if (IsKeyPressed(KEY_KP_0))
+			_simulation.SetNumBodies(10 * MEDIUM_COUNT);
+
+		// Large
+		if (IsKeyPressed(KEY_F1))
+			_simulation.SetNumBodies(1 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F2))
+			_simulation.SetNumBodies(2 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F3))
+			_simulation.SetNumBodies(3 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F4))
+			_simulation.SetNumBodies(4 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F5))
+			_simulation.SetNumBodies(5 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F6))
+			_simulation.SetNumBodies(6 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F7))
+			_simulation.SetNumBodies(7 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F8))
+			_simulation.SetNumBodies(8 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F9))
+			_simulation.SetNumBodies(9 * LARGE_COUNT);
+		else if (IsKeyPressed(KEY_F10))
+			_simulation.SetNumBodies(10 * LARGE_COUNT);
+	}
+};
+
+void Run()
 {
-	BeginDrawing();
-
-	ClearBackground(BEIGE);
-	sim.Draw();
-	DrawFPS(10, 10);
-
-	EndDrawing();
+	App app(800, 600, 1);
+	while (!WindowShouldClose())
+	{
+		app.Update();
+		app.DrawFrame();
+	}
 }
 
 int main(void)
@@ -197,18 +298,7 @@ int main(void)
 	InitWindow(800, 600, "Kinematics Demo");
 	SetTargetFPS(60);
 
-	kinematics::Simulation sim(800, 600, 1);
-	while (!WindowShouldClose())
-	{
-		if (IsWindowResized())
-		{
-			sim.SetBounds(GetScreenWidth(), GetScreenHeight());
-		}
-
-		HandleInput(sim);
-		sim.Update(GetFrameTime());
-		DrawFrame(sim);
-	}
+	Run();
 
 	CloseWindow();
 	return 0;
