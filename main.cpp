@@ -96,6 +96,13 @@ class Simulation
 		}
 	}
 
+	/// Set the bounds of the simulation
+	void SetBounds(const int width, const int height)
+	{
+		_width = width;
+		_height = height;
+	}
+
 	/// @returns The number of bodies in the simulation
 	size_t GetNumBodies() const { return _bodies.size(); }
 
@@ -193,6 +200,11 @@ int main(void)
 	kinematics::Simulation sim(800, 600, 1);
 	while (!WindowShouldClose())
 	{
+		if (IsWindowResized())
+		{
+			sim.SetBounds(GetScreenWidth(), GetScreenHeight());
+		}
+
 		HandleInput(sim);
 		sim.Update(GetFrameTime());
 		DrawFrame(sim);
