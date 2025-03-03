@@ -3,7 +3,7 @@
 
 namespace kinematics
 {
-constexpr int BODY_RADIUS = 20;
+constexpr int BODY_RADIUS = 10;
 constexpr float SPEED_MODIFIER = 2.4;
 
 /// Basic structure for describing a body of the simulation
@@ -26,27 +26,8 @@ class Simulation
 	/// @param numBodies The number of bodies to initially add to the simulation
 	Simulation(const int width, const int height, const size_t numBodies) : _width(width), _height(height)
 	{
-		// Add `numBodies` bodies to the simulation
-		_bodies.reserve(numBodies);
-		for (auto i = 0; i < numBodies; i++)
-		{
-			Body body;
-
-			// Random starting position of a body that is in bounds
-			body.x = GetRandomValue(BODY_RADIUS, _width - BODY_RADIUS);
-			body.y = GetRandomValue(BODY_RADIUS, _height - BODY_RADIUS);
-
-			// Random starting speeds of body
-			body.horizontalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
-			body.verticalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
-
-			// Random (non-transparent) color of body
-			body.color = {static_cast<unsigned char>(GetRandomValue(0, 255)),
-			              static_cast<unsigned char>(GetRandomValue(0, 255)),
-			              static_cast<unsigned char>(GetRandomValue(0, 255)), 255};
-
-			_bodies.push_back(body);
-		}
+		// Add an initial `numBodies` bodies to the simulation
+		SetNumBodies(numBodies);
 	}
 
 	/// Progress the simulation by `deltaTime` seconds
@@ -91,11 +72,96 @@ class Simulation
 		}
 	}
 
+	/// Set the number of bodies in the simulation. Bodies will be created or removed to match the input value.
+	/// @totalNumBodies The amount of bodies to have in the simulation
+	void SetNumBodies(const size_t totalNumBodies)
+	{
+		if (totalNumBodies > GetNumBodies())
+		{
+			_bodies.reserve(totalNumBodies);
+			for (auto i = GetNumBodies(); i < totalNumBodies; i++)
+			{
+				AddRandomBody();
+			}
+		}
+		else
+		{
+			_bodies.resize(totalNumBodies);
+		}
+	}
+
+	/// @returns The number of bodies in the simulation
+	size_t GetNumBodies() const { return _bodies.size(); }
+
   private:
+	void AddRandomBody()
+	{
+		Body body;
+
+		// Random starting position of a body that is in bounds
+		body.x = GetRandomValue(BODY_RADIUS, _width - BODY_RADIUS);
+		body.y = GetRandomValue(BODY_RADIUS, _height - BODY_RADIUS);
+
+		// Random starting speeds of body
+		body.horizontalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+		body.verticalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+
+		// Random (non-transparent) color of body
+		body.color = {static_cast<unsigned char>(GetRandomValue(0, 255)),
+		              static_cast<unsigned char>(GetRandomValue(0, 255)),
+		              static_cast<unsigned char>(GetRandomValue(0, 255)), 255};
+
+		_bodies.push_back(body);
+	}
+
 	int _width, _height;
 	std::vector<Body> _bodies;
 };
 } // namespace kinematics
+
+/// Update the simulation according to user input. Currently used to set the number of bodies.
+void HandleInput(kinematics::Simulation &sim)
+{
+	constexpr size_t SMALL_COUNT = 1;
+	constexpr size_t MEDIUM_COUNT = 1'000;
+	constexpr size_t LARGE_COUNT = 10'000;
+
+	// Small
+	if (IsKeyPressed(KEY_ONE)) sim.SetNumBodies(1 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_TWO)) sim.SetNumBodies(2 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_THREE)) sim.SetNumBodies(3 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_FOUR)) sim.SetNumBodies(4 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_FIVE)) sim.SetNumBodies(5 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_SIX)) sim.SetNumBodies(6 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_SEVEN)) sim.SetNumBodies(7 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_EIGHT)) sim.SetNumBodies(8 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_NINE)) sim.SetNumBodies(9 * SMALL_COUNT);
+	else if (IsKeyPressed(KEY_ZERO)) sim.SetNumBodies(10 * SMALL_COUNT);
+
+	// Medium
+	if (IsKeyPressed(KEY_KP_1)) sim.SetNumBodies(1 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_2)) sim.SetNumBodies(2 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_3)) sim.SetNumBodies(3 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_4)) sim.SetNumBodies(4 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_5)) sim.SetNumBodies(5 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_6)) sim.SetNumBodies(6 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_7)) sim.SetNumBodies(7 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_8)) sim.SetNumBodies(8 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_9)) sim.SetNumBodies(9 * MEDIUM_COUNT);
+	else if (IsKeyPressed(KEY_KP_0)) sim.SetNumBodies(10 * MEDIUM_COUNT);
+
+	// Large
+	if (IsKeyPressed(KEY_F1)) sim.SetNumBodies(1 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F2)) sim.SetNumBodies(2 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F3)) sim.SetNumBodies(3 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F4)) sim.SetNumBodies(4 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F5)) sim.SetNumBodies(5 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F6)) sim.SetNumBodies(6 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F7)) sim.SetNumBodies(7 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F8)) sim.SetNumBodies(8 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F9)) sim.SetNumBodies(9 * LARGE_COUNT);
+	else if (IsKeyPressed(KEY_F10)) sim.SetNumBodies(10 * LARGE_COUNT);
+}
 
 /// Top level draw function for the entire scene.
 /// Includes: Background, FPS counter and `Simulation` contents.
@@ -104,9 +170,8 @@ void DrawFrame(kinematics::Simulation &sim)
 	BeginDrawing();
 
 	ClearBackground(BEIGE);
-	DrawFPS(10, 10);
-
 	sim.Draw();
+	DrawFPS(10, 10);
 
 	EndDrawing();
 }
@@ -117,9 +182,10 @@ int main(void)
 	InitWindow(800, 600, "Kinematics Demo");
 	SetTargetFPS(60);
 
-	kinematics::Simulation sim(800, 600, 10);
+	kinematics::Simulation sim(800, 600, 1);
 	while (!WindowShouldClose())
 	{
+		HandleInput(sim);
 		sim.Update(GetFrameTime());
 		DrawFrame(sim);
 	}
