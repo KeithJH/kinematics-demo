@@ -3,25 +3,38 @@
 namespace kinematics
 {
 constexpr int BODY_RADIUS = 20;
-constexpr float SPEED_MODIFIER = 60.0;
+constexpr float SPEED_MODIFIER = 2.4;
 
 /// Basic structure for describing a body of the simulation
 struct Body
 {
-	float x, y;	// center position
+	float x, y; // center position
 	float horizontalSpeed, verticalSpeed;
 	Color color;
 };
 
-/// Describes how the simulated "world" behaves. Currently this includes a singular `Body` that bounces around the screen.
+/// Describes how the simulated "world" behaves. Currently this includes a singular `Body` that bounces around the
+/// screen.
 class Simulation
 {
   public:
-	/// Create a simulation bounded with the given `width` and `height`
+	/// Create a simulation bounded with the given `width` and `height`.
+	/// Note: This uses random numbers and as such the random seed should be set prior to calling, either directly with
+	/// `SetRandomSeed(...)` or indirectly with `InitWindow(...)`
 	Simulation(const int width, const int height) : _width(width), _height(height)
 	{
-		_body = Body{
-			.x = 100, .y = 100, .horizontalSpeed = SPEED_MODIFIER, .verticalSpeed = SPEED_MODIFIER, .color = DARKBLUE};
+		// Random starting position of body that is in bounds
+		_body.x = GetRandomValue(BODY_RADIUS, _width - BODY_RADIUS);
+		_body.y = GetRandomValue(BODY_RADIUS, _height - BODY_RADIUS);
+
+		// Random starting speeds of body
+		_body.horizontalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+		_body.verticalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+
+		// Random (non-transparent) color of body
+		_body.color = {static_cast<unsigned char>(GetRandomValue(0, 255)),
+		               static_cast<unsigned char>(GetRandomValue(0, 255)),
+		               static_cast<unsigned char>(GetRandomValue(0, 255)), 255};
 	}
 
 	/// Progress the simulation by `deltaTime` seconds
@@ -81,12 +94,11 @@ void DrawFrame(kinematics::Simulation &sim)
 
 int main(void)
 {
-	kinematics::Simulation sim(800, 600);
-
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	InitWindow(800, 600, "Kinematics Demo");
 	SetTargetFPS(60);
 
+	kinematics::Simulation sim(800, 600);
 	while (!WindowShouldClose())
 	{
 		sim.Update(GetFrameTime());
