@@ -211,8 +211,8 @@ class App
 			_updateBodies = !_updateBodies;
 
 		constexpr size_t SMALL_COUNT = 1;
-		constexpr size_t MEDIUM_COUNT = 1'000;
-		constexpr size_t LARGE_COUNT = 100'000;
+		constexpr size_t MEDIUM_COUNT = 100'000;
+		constexpr size_t LARGE_COUNT = 1'000'000;
 
 		// Small
 		if (IsKeyPressed(KEY_ONE))
@@ -294,9 +294,8 @@ void Run()
 
 int main(void)
 {
-	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	InitWindow(800, 600, "Kinematics Demo");
-	SetTargetFPS(60);
 
 	Run();
 
