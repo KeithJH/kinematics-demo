@@ -28,6 +28,13 @@ class Simulation
 	{
 		// Add an initial `numBodies` bodies to the simulation
 		SetNumBodies(numBodies);
+
+		// Create texture for all bodies to reuse
+		_bodyRender = LoadRenderTexture(BODY_RADIUS * 2, BODY_RADIUS * 2);
+		BeginTextureMode(_bodyRender);
+		ClearBackground(BLANK);
+		DrawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS, WHITE);
+		EndTextureMode();
 	}
 
 	/// Progress the simulation by `deltaTime` seconds
@@ -65,10 +72,9 @@ class Simulation
 	/// Draw contents to the screen
 	void Draw() const
 	{
-		// TODO: avoid recalculating a circle every time
 		for (auto &body : _bodies)
 		{
-			DrawCircle(body.x, body.y, BODY_RADIUS, body.color);
+			DrawTexture(_bodyRender.texture, body.x - BODY_RADIUS, body.y - BODY_RADIUS, body.color);
 		}
 	}
 
@@ -116,6 +122,8 @@ class Simulation
 
 	int _width, _height;
 	std::vector<Body> _bodies;
+
+	RenderTexture2D _bodyRender;
 };
 } // namespace kinematics
 
@@ -124,7 +132,7 @@ void HandleInput(kinematics::Simulation &sim)
 {
 	constexpr size_t SMALL_COUNT = 1;
 	constexpr size_t MEDIUM_COUNT = 1'000;
-	constexpr size_t LARGE_COUNT = 10'000;
+	constexpr size_t LARGE_COUNT = 100'000;
 
 	// Small
 	if (IsKeyPressed(KEY_ONE)) sim.SetNumBodies(1 * SMALL_COUNT);
