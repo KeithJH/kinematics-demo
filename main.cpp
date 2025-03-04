@@ -5,7 +5,7 @@
 namespace kinematics
 {
 constexpr int BODY_RADIUS = 10;
-constexpr float SPEED_MODIFIER = 2.4;
+constexpr float SPEED_MODIFIER = 2.4f;
 
 /// Basic structure for describing a body of the simulation
 struct Body
@@ -25,7 +25,7 @@ class Simulation
 	/// @param width Width of the environment to create
 	/// @param height Height of the environment to create
 	/// @param numBodies The number of bodies to initially add to the simulation
-	Simulation(const int width, const int height, const size_t numBodies) : _width(width), _height(height)
+	Simulation(const float width, const float height, const size_t numBodies) : _width(width), _height(height)
 	{
 		// Add an initial `numBodies` bodies to the simulation
 		SetNumBodies(numBodies);
@@ -77,7 +77,8 @@ class Simulation
 	{
 		for (const auto &body : _bodies)
 		{
-			DrawTexture(_bodyRender.texture, body.x - BODY_RADIUS, body.y - BODY_RADIUS, body.color);
+			DrawTexture(_bodyRender.texture, static_cast<int>(body.x - BODY_RADIUS),
+			            static_cast<int>(body.y - BODY_RADIUS), body.color);
 		}
 	}
 
@@ -100,7 +101,7 @@ class Simulation
 	}
 
 	/// Set the bounds of the simulation
-	void SetBounds(const int width, const int height)
+	void SetBounds(const float width, const float height)
 	{
 		_width = width;
 		_height = height;
@@ -115,12 +116,12 @@ class Simulation
 		Body body;
 
 		// Random starting position of a body that is in bounds
-		body.x = GetRandomValue(BODY_RADIUS, _width - BODY_RADIUS);
-		body.y = GetRandomValue(BODY_RADIUS, _height - BODY_RADIUS);
+		body.x = static_cast<float>(GetRandomValue(BODY_RADIUS, static_cast<int>(_width - BODY_RADIUS)));
+		body.y = static_cast<float>(GetRandomValue(BODY_RADIUS, static_cast<int>(_height - BODY_RADIUS)));
 
 		// Random starting speeds of body
-		body.horizontalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
-		body.verticalSpeed = GetRandomValue(-100, 100) * SPEED_MODIFIER;
+		body.horizontalSpeed = static_cast<float>(GetRandomValue(-100, 100)) * SPEED_MODIFIER;
+		body.verticalSpeed = static_cast<float>(GetRandomValue(-100, 100)) * SPEED_MODIFIER;
 
 		// Random (non-transparent) color of body
 		body.color = {static_cast<unsigned char>(GetRandomValue(0, 255)),
@@ -130,7 +131,7 @@ class Simulation
 		_bodies.push_back(body);
 	}
 
-	int _width, _height;
+	float _width, _height;
 	std::vector<Body> _bodies;
 
 	RenderTexture2D _bodyRender;
@@ -140,7 +141,10 @@ class Simulation
 class App
 {
   public:
-	App(const int width, const int height, const int initialNumBodies) : _simulation(width, height, initialNumBodies) {}
+	App(const float width, const float height, const size_t initialNumBodies)
+		: _simulation(width, height, initialNumBodies)
+	{
+	}
 
 	void Update()
 	{
@@ -149,7 +153,7 @@ class App
 
 		if (IsWindowResized())
 		{
-			_simulation.SetBounds(GetScreenWidth(), GetScreenHeight());
+			_simulation.SetBounds(static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()));
 		}
 
 		if (_updateBodies)
@@ -182,8 +186,8 @@ class App
 			DrawRectangle(10, 10, 400, 150, DARKGRAY);
 			DrawText(TextFormat("Bodies:\t%d\nFrame  Time (us):\t%.0f\nUpdate Time (us):\t%ld\nRender "
 			                    "Bodies:\t%d\nUpdate Bodies:\t%d",
-			                    _simulation.GetNumBodies(), _frameTimeSeconds * SECONDS_TO_MICROS, _updateMicroseconds,
-			                    _renderBodies, _updateBodies),
+			                    _simulation.GetNumBodies(), static_cast<double>(_frameTimeSeconds * SECONDS_TO_MICROS),
+			                    _updateMicroseconds, _renderBodies, _updateBodies),
 			         20, 40, 20, WHITE);
 		}
 

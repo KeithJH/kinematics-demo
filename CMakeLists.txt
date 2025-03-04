@@ -38,5 +38,12 @@ FetchContent_MakeAvailable(Catch2)
 # Our Project
 project(kinematics-demo CXX)
 
+include("cmake/Warnings.gcc.cmake")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  include("cmake/Sanitizers.gcc.cmake")
+endif ()
+
 add_executable(${PROJECT_NAME}-gui main.cpp)
 target_link_libraries(${PROJECT_NAME}-gui raylib)
+target_compile_options(${PROJECT_NAME}-gui PRIVATE ${WARNING_OPTIONS} ${SANITIZER_OPTIONS})
+target_link_options(${PROJECT_NAME}-gui PRIVATE ${SANITIZER_OPTIONS})
