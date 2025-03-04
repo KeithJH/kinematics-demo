@@ -45,3 +45,4 @@ endif ()
 
 add_subdirectory(kinematics)
 add_subdirectory(gui)
+add_subdirectory(bench)
