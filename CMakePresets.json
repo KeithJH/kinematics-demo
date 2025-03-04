@@ -28,7 +28,7 @@
       }
     },
     {
-      "name": "linux-gcc-debug",
+      "name": "debug",
       "displayName": "Linux GCC Debug",
       "inherits": "linux-gcc-base",
       "cacheVariables": {
@@ -36,7 +36,7 @@
       }
     },
     {
-      "name": "linux-gcc-release",
+      "name": "release",
       "displayName": "Linux GCC Release",
       "inherits": "linux-gcc-base",
       "cacheVariables": {
