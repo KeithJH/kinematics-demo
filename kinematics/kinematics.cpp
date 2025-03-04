@@ -1,4 +1,5 @@
 #include "kinematics.h"
+#include <cassert>
 #include <raylib.h>
 #include <vector>
 
@@ -9,15 +10,25 @@ Simulation::Simulation(const float width, const float height, const size_t numBo
 	// Add an initial `numBodies` bodies to the simulation
 	SetNumBodies(numBodies);
 
-	// Create texture for all bodies to reuse
-	_bodyRender = LoadRenderTexture(BODY_RADIUS * 2, BODY_RADIUS * 2);
-	BeginTextureMode(_bodyRender);
-	ClearBackground(BLANK);
-	DrawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS, WHITE);
-	EndTextureMode();
+	// Not the most robust, but avoid segfault trying to access window related functionality where a window is not
+	// present (such as via the benchmark).
+	if (IsWindowReady())
+	{
+		// Create texture for all bodies to reuse
+		_bodyRender = LoadRenderTexture(BODY_RADIUS * 2, BODY_RADIUS * 2);
+		BeginTextureMode(_bodyRender);
+		ClearBackground(BLANK);
+		DrawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS, WHITE);
+		EndTextureMode();
+	}
 }
 
-Simulation::~Simulation() { UnloadRenderTexture(_bodyRender); }
+Simulation::~Simulation()
+{
+	// Only unload texture if window is still ready to avoid potential segfault
+	if (IsWindowReady())
+		UnloadRenderTexture(_bodyRender);
+}
 
 void Simulation::Update(const float deltaTime)
 {
@@ -51,6 +62,9 @@ void Simulation::Update(const float deltaTime)
 
 void Simulation::Draw() const
 {
+	// `Draw()` should not be called when a window is not available
+	assert(IsWindowReady());
+
 	for (const auto &body : _bodies)
 	{
 		DrawTexture(_bodyRender.texture, static_cast<int>(body.x - BODY_RADIUS), static_cast<int>(body.y - BODY_RADIUS),
