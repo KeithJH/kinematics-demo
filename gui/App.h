@@ -15,7 +15,7 @@ class App
   private:
 	bool _renderBodies = true, _renderStats = false;
 	bool _updateBodies = true;
-	kinematics::Simulation _simulation;
+	kinematics::VectorOfStructSim _simulation;
 
 	float _frameTimeSeconds;
 	long _updateMicroseconds;

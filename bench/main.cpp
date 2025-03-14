@@ -7,13 +7,22 @@
 TEST_CASE("Simulation")
 {
 	auto size = static_cast<size_t>(GENERATE(1'000, 10'000, 100'000, 1'000'000, 5'000'000));
-	kinematics::Simulation simulation(800, 600, size);
 
-	BENCHMARK("Update Simulation: " + std::to_string(size))
+	// TODO: Generate objects once and share between simulation initializations for fair comparison
+	kinematics::VectorOfStructSim vectorOfStructSim(800, 600, size);
+	kinematics::StructOfVectorSim structOfVectorSim(800, 600, size);
+
+	// `Update()` has obvious side-effects so it isn't ideal to reuse simulations, but may be accurate enough for
+	// this benchmark
+
+	constexpr float TIME_CONSTANT = 1.f / 60.f;
+	BENCHMARK("Update VectorOfStructSim: " + std::to_string(size))
 	{
-		// `Update()` has obvious side-effects so it isn't ideal to reuse `simulation`, but may be accurate enough for
-		// this benchmark
-		return simulation.Update(1.f / 60.f);
+		return vectorOfStructSim.Update(TIME_CONSTANT);
+	};
+	BENCHMARK("Update StructOfVectorSim: " + std::to_string(size))
+	{
+		return structOfVectorSim.Update(TIME_CONSTANT);
 	};
 }
 

@@ -24,35 +24,78 @@ class Simulation
 	/// `SetRandomSeed(...)` or indirectly with `InitWindow(...)`
 	/// @param width Width of the environment to create
 	/// @param height Height of the environment to create
-	/// @param numBodies The number of bodies to initially add to the simulation
-	Simulation(const float width, const float height, const size_t numBodies);
+	Simulation(const float width, const float height);
 
-	~Simulation();
+	virtual ~Simulation();
 
 	/// Progress the simulation by `deltaTime` seconds
 	/// @param deltaTime Time in seconds to progress the simulation
-	void Update(const float deltaTime);
+	virtual void Update(const float deltaTime) = 0;
 
 	/// Draw contents to the screen
-	void Draw() const;
+	virtual void Draw() const = 0;
 
 	/// Set the number of bodies in the simulation. Bodies will be created or removed to match the input value.
 	/// @totalNumBodies The amount of bodies to have in the simulation
-	void SetNumBodies(const size_t totalNumBodies);
+	virtual void SetNumBodies(const size_t totalNumBodies) = 0;
+
+	/// @returns The number of bodies in the simulation
+	virtual size_t GetNumBodies() const = 0;
 
 	/// Set the bounds of the simulation
 	void SetBounds(const float width, const float height);
 
-	/// @returns The number of bodies in the simulation
-	size_t GetNumBodies() const;
+  protected:
+	Body GenerateRandomBody();
 
   private:
-	void AddRandomBody();
+	virtual void AddRandomBody() = 0;
 
-  private:
+  protected:
 	float _width, _height;
-	std::vector<Body> _bodies;
-
 	RenderTexture2D _bodyRender;
+};
+
+class VectorOfStructSim : public Simulation
+{
+  public:
+	/// @param numBodies The number of bodies to initially add to the simulation
+	VectorOfStructSim(const float width, const float height, const size_t numBodies);
+	// TODO: Constructor with initial body list?
+
+	void Update(const float deltaTime) override;
+	void Draw() const override;
+	void SetNumBodies(const size_t totalNumBodies) override;
+	size_t GetNumBodies() const override;
+
+  private:
+	void AddRandomBody() override;
+
+  private:
+	std::vector<Body> _bodies;
+};
+
+class StructOfVectorSim : public Simulation
+{
+  public:
+	/// @param numBodies The number of bodies to initially add to the simulation
+	StructOfVectorSim(const float width, const float height, const size_t numBodies);
+
+	void Update(const float deltaTime) override;
+	void Draw() const override;
+	void SetNumBodies(const size_t totalNumBodies) override;
+	size_t GetNumBodies() const override;
+
+  private:
+	void AddRandomBody() override;
+
+  private:
+	struct Bodies
+	{
+		std::vector<float> x, y; // center position
+		std::vector<float> horizontalSpeed, verticalSpeed;
+		std::vector<Color> color;
+	};
+	Bodies _bodies;
 };
 } // namespace kinematics
