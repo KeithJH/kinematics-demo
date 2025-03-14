@@ -12,6 +12,7 @@ Simulation::Simulation(const float width, const float height, const size_t numBo
 
 	// Not the most robust, but avoid segfault trying to access window related functionality where a window is not
 	// present (such as via the benchmark).
+	// TODO: Compose a draw stategy?
 	if (IsWindowReady())
 	{
 		// Create texture for all bodies to reuse
