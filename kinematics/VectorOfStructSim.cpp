@@ -12,6 +12,29 @@ VectorOfStructSim::VectorOfStructSim(const float width, const float height, cons
 	SetNumBodies(numBodies);
 }
 
+VectorOfStructSim::VectorOfStructSim(const float width, const float height, const Simulation &toCopy)
+	: Simulation(width, height)
+{
+	for (const auto &body : toCopy.GetBodies())
+	{
+		_bodies.push_back(body);
+	}
+}
+
+std::vector<Body> VectorOfStructSim::GetBodies() const
+{
+	std::vector<Body> copy;
+	copy.reserve(GetNumBodies());
+
+	for (const auto &body : _bodies)
+	{
+		// TODO: might be good to add explicit constructor to help avoid ordering issues?
+		copy.emplace_back(body.x, body.y, body.horizontalSpeed, body.verticalSpeed, body.color);
+	}
+
+	return copy;
+}
+
 void VectorOfStructSim::Update(const float deltaTime)
 {
 	for (auto &body : _bodies)

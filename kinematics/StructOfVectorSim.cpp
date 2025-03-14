@@ -11,6 +11,36 @@ StructOfVectorSim::StructOfVectorSim(const float width, const float height, cons
 	// Add an initial `numBodies` bodies to the simulation
 	SetNumBodies(numBodies);
 }
+StructOfVectorSim::StructOfVectorSim(const float width, const float height, const Simulation &toCopy)
+	: Simulation(width, height)
+{
+	const auto totalNumBodies = toCopy.GetNumBodies();
+	_bodies.x.reserve(totalNumBodies);
+	_bodies.y.reserve(totalNumBodies);
+	_bodies.horizontalSpeed.reserve(totalNumBodies);
+	_bodies.verticalSpeed.reserve(totalNumBodies);
+	_bodies.color.reserve(totalNumBodies);
+
+	for (const auto &body : toCopy.GetBodies())
+	{
+		AddBody(body);
+	}
+}
+
+std::vector<Body> StructOfVectorSim::GetBodies() const
+{
+	std::vector<Body> copy;
+	copy.reserve(GetNumBodies());
+
+	const auto numBodies = GetNumBodies();
+	for (auto i = 0zu; i < numBodies; i++)
+	{
+		copy.emplace_back(_bodies.x[i], _bodies.y[i], _bodies.horizontalSpeed[i], _bodies.verticalSpeed[i],
+		                  _bodies.color[i]);
+	}
+
+	return copy;
+}
 
 void StructOfVectorSim::Update(const float deltaTime)
 {
@@ -82,10 +112,10 @@ void StructOfVectorSim::SetNumBodies(const size_t totalNumBodies)
 
 size_t StructOfVectorSim::GetNumBodies() const { return _bodies.x.size(); }
 
-void StructOfVectorSim::AddRandomBody()
-{
-	Body body = GenerateRandomBody();
+void StructOfVectorSim::AddRandomBody() { AddBody(GenerateRandomBody()); }
 
+void StructOfVectorSim::AddBody(const Body body)
+{
 	_bodies.x.push_back(body.x);
 	_bodies.y.push_back(body.y);
 
@@ -94,4 +124,5 @@ void StructOfVectorSim::AddRandomBody()
 
 	_bodies.color.push_back(body.color);
 }
+
 } // namespace kinematics

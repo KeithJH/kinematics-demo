@@ -43,6 +43,9 @@ class Simulation
 	/// @returns The number of bodies in the simulation
 	virtual size_t GetNumBodies() const = 0;
 
+	/// @returns A vector of copies of the contained bodies
+	virtual std::vector<Body> GetBodies() const = 0;
+
 	/// Set the bounds of the simulation
 	void SetBounds(const float width, const float height);
 
@@ -62,12 +65,16 @@ class VectorOfStructSim : public Simulation
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
 	VectorOfStructSim(const float width, const float height, const size_t numBodies);
-	// TODO: Constructor with initial body list?
+
+	/// @param toCopy Simulation containing he bodies to initially copy to this simulation. The originals will not be
+	/// modified.
+	VectorOfStructSim(const float width, const float height, const Simulation &toCopy);
 
 	void Update(const float deltaTime) override;
 	void Draw() const override;
 	void SetNumBodies(const size_t totalNumBodies) override;
 	size_t GetNumBodies() const override;
+	std::vector<Body> GetBodies() const override;
 
   private:
 	void AddRandomBody() override;
@@ -81,13 +88,16 @@ class StructOfVectorSim : public Simulation
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
 	StructOfVectorSim(const float width, const float height, const size_t numBodies);
+	StructOfVectorSim(const float width, const float height, const Simulation &toCopy);
 
 	void Update(const float deltaTime) override;
 	void Draw() const override;
 	void SetNumBodies(const size_t totalNumBodies) override;
 	size_t GetNumBodies() const override;
+	std::vector<Body> GetBodies() const override;
 
   private:
+	void AddBody(const Body body); // TODO: should this be on base class?
 	void AddRandomBody() override;
 
   private:
@@ -105,13 +115,16 @@ template <size_t MAX_SIZE> class StructOfArraySim : public Simulation
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
 	StructOfArraySim(const float width, const float height, const size_t numBodies);
+	StructOfArraySim(const float width, const float height, const Simulation &toCopy);
 
 	void Update(const float deltaTime) override;
 	void Draw() const override;
 	void SetNumBodies(const size_t totalNumBodies) override;
 	size_t GetNumBodies() const override;
+	std::vector<Body> GetBodies() const override;
 
   private:
+	void AddBody(const Body body);
 	void AddRandomBody() override;
 
   private:
