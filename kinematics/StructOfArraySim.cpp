@@ -6,7 +6,7 @@ namespace kinematics
 {
 template <size_t size>
 StructOfArraySim<size>::StructOfArraySim(const float width, const float height, const size_t numBodies)
-	: Simulation(width, height)
+	: Simulation(width, height), _numBodies(0)
 {
 	// Add an initial `numBodies` bodies to the simulation
 	SetNumBodies(numBodies);
@@ -14,7 +14,7 @@ StructOfArraySim<size>::StructOfArraySim(const float width, const float height, 
 
 template <size_t size>
 StructOfArraySim<size>::StructOfArraySim(const float width, const float height, const Simulation &toCopy)
-	: Simulation(width, height)
+	: Simulation(width, height), _numBodies(0)
 {
 	[[maybe_unused]] const auto totalNumBodies = toCopy.GetNumBodies();
 	assert(size >= totalNumBodies);

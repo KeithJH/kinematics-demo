@@ -88,6 +88,9 @@ class StructOfVectorSim : public Simulation
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
 	StructOfVectorSim(const float width, const float height, const size_t numBodies);
+
+	/// @param toCopy Simulation containing he bodies to initially copy to this simulation. The originals will not be
+	/// modified.
 	StructOfVectorSim(const float width, const float height, const Simulation &toCopy);
 
 	void Update(const float deltaTime) override;
@@ -110,11 +113,47 @@ class StructOfVectorSim : public Simulation
 	Bodies _bodies;
 };
 
+class StructOfPointerSim : public Simulation
+{
+  public:
+	/// @param numBodies The number of bodies to initially add to the simulation
+	StructOfPointerSim(const float width, const float height, const size_t numBodies);
+
+	/// @param toCopy Simulation containing he bodies to initially copy to this simulation. The originals will not be
+	/// modified.
+	StructOfPointerSim(const float width, const float height, const Simulation &toCopy);
+	~StructOfPointerSim();
+
+	void Update(const float deltaTime) override;
+	void Draw() const override;
+	void SetNumBodies(const size_t totalNumBodies) override;
+	size_t GetNumBodies() const override;
+	std::vector<Body> GetBodies() const override;
+
+  private:
+	void AddBody(const Body body);
+	void AddRandomBody() override;
+
+  private:
+	struct Bodies
+	{
+		float *x, *y; // center position
+		float *horizontalSpeed, *verticalSpeed;
+		Color *color;
+	};
+	Bodies _bodies;
+	size_t _numBodies;
+	size_t _maxBodies;
+};
+
 template <size_t MAX_SIZE> class StructOfArraySim : public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
 	StructOfArraySim(const float width, const float height, const size_t numBodies);
+
+	/// @param toCopy Simulation containing he bodies to initially copy to this simulation. The originals will not be
+	/// modified.
 	StructOfArraySim(const float width, const float height, const Simulation &toCopy);
 
 	void Update(const float deltaTime) override;

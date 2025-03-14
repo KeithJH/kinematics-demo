@@ -5,7 +5,7 @@
 
 #include "../kinematics/kinematics.h"
 
-TEST_CASE("Update")
+TEST_CASE("Update", "[update]")
 {
 	auto size = static_cast<size_t>(GENERATE(1'000, 10'000, 100'000, 1'000'000, 5'000'000));
 
@@ -13,6 +13,7 @@ TEST_CASE("Update")
 	auto structOfVectorSim = std::make_unique<kinematics::StructOfVectorSim>(800, 600, *vectorOfStructSim.get());
 	auto structOfArraySim =
 		std::make_unique<kinematics::StructOfArraySim<5'000'000>>(800, 600, *vectorOfStructSim.get());
+	auto structOfPointerSim = std::make_unique<kinematics::StructOfPointerSim>(800, 600, *vectorOfStructSim.get());
 
 	// `Update()` has obvious side-effects so it isn't ideal to reuse simulations, but may be accurate enough for
 	// this benchmark
@@ -21,10 +22,11 @@ TEST_CASE("Update")
 	BENCHMARK("Update VectorOfStructSim: " + std::to_string(size)) { return vectorOfStructSim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update StructOfVectorSim: " + std::to_string(size)) { return structOfVectorSim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update StructOfArraySim: " + std::to_string(size)) { return structOfArraySim->Update(TIME_CONSTANT); };
+	BENCHMARK("Update StructOfPointerSim: " + std::to_string(size)) { return structOfPointerSim->Update(TIME_CONSTANT); };
 }
 
 // TODO: This should be split into proper tests, but gives good confidence for benchmark as-is
-TEST_CASE("Copy")
+TEST_CASE("Copy", "[copy]")
 {
 	auto size = static_cast<size_t>(GENERATE(1'000, 10'000));
 
@@ -34,17 +36,20 @@ TEST_CASE("Copy")
 	auto structOfVectorSim = std::make_unique<kinematics::StructOfVectorSim>(800, 600, *vectorOfStructSim.get());
 	auto structOfArraySim =
 		std::make_unique<kinematics::StructOfArraySim<5'000'000>>(800, 600, *structOfVectorSim.get());
+	auto structOfPointerSim = std::make_unique<kinematics::StructOfPointerSim>(800, 600, *original.get());
 
 	// Basic sanity test that all the sizes are set correctly
 	REQUIRE(original->GetNumBodies() == size);
 	REQUIRE(vectorOfStructSim->GetNumBodies() == size);
 	REQUIRE(structOfVectorSim->GetNumBodies() == size);
 	REQUIRE(structOfArraySim->GetNumBodies() == size);
+	REQUIRE(structOfPointerSim->GetNumBodies() == size);
 
 	auto originalBodies = vectorOfStructSim->GetBodies();
 	auto vectorOfStructBodies = vectorOfStructSim->GetBodies();
 	auto structOfVectorBodies = structOfVectorSim->GetBodies();
 	auto structOfArrayBodies = structOfArraySim->GetBodies();
+	auto structOfPointerBodies = structOfPointerSim->GetBodies();
 
 	for (auto i = 0zu; i < size; i++)
 	{
@@ -74,6 +79,15 @@ TEST_CASE("Copy")
 		REQUIRE(originalBodies[i].color.g == structOfArrayBodies[i].color.g);
 		REQUIRE(originalBodies[i].color.b == structOfArrayBodies[i].color.b);
 		REQUIRE(originalBodies[i].color.a == structOfArrayBodies[i].color.a);
+
+		REQUIRE(originalBodies[i].x == structOfPointerBodies[i].x);
+		REQUIRE(originalBodies[i].y == structOfPointerBodies[i].y);
+		REQUIRE(originalBodies[i].horizontalSpeed == structOfPointerBodies[i].horizontalSpeed);
+		REQUIRE(originalBodies[i].verticalSpeed == structOfPointerBodies[i].verticalSpeed);
+		REQUIRE(originalBodies[i].color.r == structOfPointerBodies[i].color.r);
+		REQUIRE(originalBodies[i].color.g == structOfPointerBodies[i].color.g);
+		REQUIRE(originalBodies[i].color.b == structOfPointerBodies[i].color.b);
+		REQUIRE(originalBodies[i].color.a == structOfPointerBodies[i].color.a);
 	}
 }
 
