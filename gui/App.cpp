@@ -1,10 +1,11 @@
 #include <chrono>
+#include <memory>
 #include <raylib.h>
 
 #include "App.h"
 
 App::App(const float width, const float height, const size_t initialNumBodies)
-	: _simulation(width, height, initialNumBodies)
+	: _simulation(std::make_unique<kinematics::StructOfVectorSim>(width, height, initialNumBodies))
 {
 }
 
@@ -15,13 +16,13 @@ void App::Update()
 
 	if (IsWindowResized())
 	{
-		_simulation.SetBounds(static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()));
+		_simulation->SetBounds(static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()));
 	}
 
 	if (_updateBodies)
 	{
 		auto startUpdateTime = std::chrono::steady_clock::now();
-		_simulation.Update(_frameTimeSeconds);
+		_simulation->Update(_frameTimeSeconds);
 		auto endUpdateTime = std::chrono::steady_clock::now();
 
 		_updateMicroseconds =
@@ -36,7 +37,7 @@ void App::DrawFrame() const
 
 	if (_renderBodies)
 	{
-		_simulation.Draw();
+		_simulation->Draw();
 	}
 
 	if (_renderStats)
@@ -46,7 +47,7 @@ void App::DrawFrame() const
 		DrawRectangle(10, 10, 400, 150, DARKGRAY);
 		DrawText(TextFormat("Bodies:\t%d\nFrame  Time (us):\t%.0f\nUpdate Time (us):\t%ld\nRender "
 		                    "Bodies:\t%d\nUpdate Bodies:\t%d",
-		                    _simulation.GetNumBodies(), static_cast<double>(_frameTimeSeconds * SECONDS_TO_MICROS),
+		                    _simulation->GetNumBodies(), static_cast<double>(_frameTimeSeconds * SECONDS_TO_MICROS),
 		                    _updateMicroseconds, _renderBodies, _updateBodies),
 		         20, 40, 20, WHITE);
 	}
@@ -70,67 +71,67 @@ void App::HandleInput()
 
 	// Small
 	if (IsKeyPressed(KEY_ONE))
-		_simulation.SetNumBodies(1 * SMALL_COUNT);
+		_simulation->SetNumBodies(1 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_TWO))
-		_simulation.SetNumBodies(2 * SMALL_COUNT);
+		_simulation->SetNumBodies(2 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_THREE))
-		_simulation.SetNumBodies(3 * SMALL_COUNT);
+		_simulation->SetNumBodies(3 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_FOUR))
-		_simulation.SetNumBodies(4 * SMALL_COUNT);
+		_simulation->SetNumBodies(4 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_FIVE))
-		_simulation.SetNumBodies(5 * SMALL_COUNT);
+		_simulation->SetNumBodies(5 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_SIX))
-		_simulation.SetNumBodies(6 * SMALL_COUNT);
+		_simulation->SetNumBodies(6 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_SEVEN))
-		_simulation.SetNumBodies(7 * SMALL_COUNT);
+		_simulation->SetNumBodies(7 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_EIGHT))
-		_simulation.SetNumBodies(8 * SMALL_COUNT);
+		_simulation->SetNumBodies(8 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_NINE))
-		_simulation.SetNumBodies(9 * SMALL_COUNT);
+		_simulation->SetNumBodies(9 * SMALL_COUNT);
 	else if (IsKeyPressed(KEY_ZERO))
-		_simulation.SetNumBodies(10 * SMALL_COUNT);
+		_simulation->SetNumBodies(10 * SMALL_COUNT);
 
 	// Medium
 	if (IsKeyPressed(KEY_KP_1))
-		_simulation.SetNumBodies(1 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(1 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_2))
-		_simulation.SetNumBodies(2 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(2 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_3))
-		_simulation.SetNumBodies(3 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(3 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_4))
-		_simulation.SetNumBodies(4 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(4 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_5))
-		_simulation.SetNumBodies(5 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(5 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_6))
-		_simulation.SetNumBodies(6 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(6 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_7))
-		_simulation.SetNumBodies(7 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(7 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_8))
-		_simulation.SetNumBodies(8 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(8 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_9))
-		_simulation.SetNumBodies(9 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(9 * MEDIUM_COUNT);
 	else if (IsKeyPressed(KEY_KP_0))
-		_simulation.SetNumBodies(10 * MEDIUM_COUNT);
+		_simulation->SetNumBodies(10 * MEDIUM_COUNT);
 
 	// Large
 	if (IsKeyPressed(KEY_F1))
-		_simulation.SetNumBodies(1 * LARGE_COUNT);
+		_simulation->SetNumBodies(1 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F2))
-		_simulation.SetNumBodies(2 * LARGE_COUNT);
+		_simulation->SetNumBodies(2 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F3))
-		_simulation.SetNumBodies(3 * LARGE_COUNT);
+		_simulation->SetNumBodies(3 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F4))
-		_simulation.SetNumBodies(4 * LARGE_COUNT);
+		_simulation->SetNumBodies(4 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F5))
-		_simulation.SetNumBodies(5 * LARGE_COUNT);
+		_simulation->SetNumBodies(5 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F6))
-		_simulation.SetNumBodies(6 * LARGE_COUNT);
+		_simulation->SetNumBodies(6 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F7))
-		_simulation.SetNumBodies(7 * LARGE_COUNT);
+		_simulation->SetNumBodies(7 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F8))
-		_simulation.SetNumBodies(8 * LARGE_COUNT);
+		_simulation->SetNumBodies(8 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F9))
-		_simulation.SetNumBodies(9 * LARGE_COUNT);
+		_simulation->SetNumBodies(9 * LARGE_COUNT);
 	else if (IsKeyPressed(KEY_F10))
-		_simulation.SetNumBodies(10 * LARGE_COUNT);
+		_simulation->SetNumBodies(10 * LARGE_COUNT);
 }

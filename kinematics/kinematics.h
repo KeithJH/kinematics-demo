@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <raylib.h>
 #include <vector>
 
@@ -97,5 +98,30 @@ class StructOfVectorSim : public Simulation
 		std::vector<Color> color;
 	};
 	Bodies _bodies;
+};
+
+template <size_t MAX_SIZE> class StructOfArraySim : public Simulation
+{
+  public:
+	/// @param numBodies The number of bodies to initially add to the simulation
+	StructOfArraySim(const float width, const float height, const size_t numBodies);
+
+	void Update(const float deltaTime) override;
+	void Draw() const override;
+	void SetNumBodies(const size_t totalNumBodies) override;
+	size_t GetNumBodies() const override;
+
+  private:
+	void AddRandomBody() override;
+
+  private:
+	struct Bodies
+	{
+		std::array<float, MAX_SIZE> x, y; // center position
+		std::array<float, MAX_SIZE> horizontalSpeed, verticalSpeed;
+		std::array<Color, MAX_SIZE> color;
+	};
+	Bodies _bodies;
+	size_t _numBodies;
 };
 } // namespace kinematics

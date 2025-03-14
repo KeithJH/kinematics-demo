@@ -1,5 +1,6 @@
 #pragma once
 #include "../kinematics/kinematics.h"
+#include <memory>
 
 class App
 {
@@ -15,7 +16,7 @@ class App
   private:
 	bool _renderBodies = true, _renderStats = false;
 	bool _updateBodies = true;
-	kinematics::VectorOfStructSim _simulation;
+	std::unique_ptr<kinematics::Simulation> _simulation;
 
 	float _frameTimeSeconds;
 	long _updateMicroseconds;
