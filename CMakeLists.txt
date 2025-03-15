@@ -43,7 +43,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   include("cmake/Sanitizers.gcc.cmake")
 endif ()
 
-#add_compile_options(-march=native)
+add_compile_options(-march=native)
 #add_compile_options(-ffast-math)
 add_subdirectory(kinematics)
 add_subdirectory(gui)

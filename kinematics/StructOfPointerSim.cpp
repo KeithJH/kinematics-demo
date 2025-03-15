@@ -68,32 +68,9 @@ std::vector<Body> StructOfPointerSim::GetBodies() const
 
 void StructOfPointerSim::Update(const float deltaTime)
 {
-	const auto numBodies = GetNumBodies();
-	for (auto i = 0zu; i < numBodies; i++)
-	{
-		// Update position based on speed
-		_bodies.x[i] += _bodies.horizontalSpeed[i] * deltaTime;
-		_bodies.y[i] += _bodies.verticalSpeed[i] * deltaTime;
-
-		// Bounce horizontally
-		if (_bodies.x[i] - BODY_RADIUS < 0 && _bodies.horizontalSpeed[i] < 0)
-		{
-			_bodies.horizontalSpeed[i] *= -1;
-		}
-		else if (_bodies.x[i] + BODY_RADIUS > _width && _bodies.horizontalSpeed[i] > 0)
-		{
-			_bodies.horizontalSpeed[i] *= -1;
-		}
-		// Bounce vertically
-		if (_bodies.y[i] - BODY_RADIUS < 0 && _bodies.verticalSpeed[i] < 0)
-		{
-			_bodies.verticalSpeed[i] *= -1;
-		}
-		else if (_bodies.y[i] + BODY_RADIUS > _height && _bodies.verticalSpeed[i] > 0)
-		{
-			_bodies.verticalSpeed[i] *= -1;
-		}
-	}
+	// TODO: is there a better way to use `__restrict__`?
+	// TODO: if not this could probably be refactored to a base class
+	UpdateHelper(deltaTime, _bodies.x, _bodies.y, _bodies.horizontalSpeed, _bodies.verticalSpeed);
 }
 
 void StructOfPointerSim::Draw() const

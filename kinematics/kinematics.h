@@ -52,6 +52,10 @@ class Simulation
   protected:
 	Body GenerateRandomBody();
 
+	// TODO: there's probably a better place for this
+	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
+	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed);
+
   private:
 	virtual void AddRandomBody() = 0;
 

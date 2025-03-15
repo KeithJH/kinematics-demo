@@ -48,7 +48,7 @@ void VectorOfStructSim::Update(const float deltaTime)
 		{
 			body.horizontalSpeed *= -1;
 		}
-		else if (body.x + BODY_RADIUS > _width && body.horizontalSpeed > 0)
+		if (body.x + BODY_RADIUS > _width && body.horizontalSpeed > 0)
 		{
 			body.horizontalSpeed *= -1;
 		}
@@ -58,7 +58,7 @@ void VectorOfStructSim::Update(const float deltaTime)
 		{
 			body.verticalSpeed *= -1;
 		}
-		else if (body.y + BODY_RADIUS > _height && body.verticalSpeed > 0)
+		if (body.y + BODY_RADIUS > _height && body.verticalSpeed > 0)
 		{
 			body.verticalSpeed *= -1;
 		}
