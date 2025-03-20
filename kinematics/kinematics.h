@@ -53,8 +53,8 @@ class Simulation
 	Body GenerateRandomBody();
 
 	// TODO: there's probably a better place for this
-	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
-	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed);
+	virtual void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
+	                          float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed);
 
   private:
 	virtual void AddRandomBody() = 0;
@@ -107,7 +107,7 @@ class StructOfVectorSim : public Simulation
 	void AddBody(const Body body); // TODO: should this be on base class?
 	void AddRandomBody() override;
 
-  private:
+  protected:
 	struct Bodies
 	{
 		std::vector<float> x, y; // center position
@@ -115,6 +115,34 @@ class StructOfVectorSim : public Simulation
 		std::vector<Color> color;
 	};
 	Bodies _bodies;
+};
+
+class OmpSimdSim : public StructOfVectorSim
+{
+  public:
+	/// @param numBodies The number of bodies to initially add to the simulation
+	OmpSimdSim(const float width, const float height, const size_t numBodies);
+
+	/// @param toCopy Simulation containing he bodies to initially copy to this simulation. The originals will not be
+	/// modified.
+	OmpSimdSim(const float width, const float height, const Simulation &toCopy);
+
+	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
+	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) override;
+};
+
+class OmpForSim : public StructOfVectorSim
+{
+  public:
+	/// @param numBodies The number of bodies to initially add to the simulation
+	OmpForSim(const float width, const float height, const size_t numBodies);
+
+	/// @param toCopy Simulation containing he bodies to initially copy to this simulation. The originals will not be
+	/// modified.
+	OmpForSim(const float width, const float height, const Simulation &toCopy);
+
+	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
+	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) override;
 };
 
 class StructOfPointerSim : public Simulation

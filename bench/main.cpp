@@ -14,6 +14,8 @@ TEST_CASE("Update", "[update]")
 	auto structOfArraySim =
 		std::make_unique<kinematics::StructOfArraySim<5'000'000>>(800, 600, *vectorOfStructSim.get());
 	auto structOfPointerSim = std::make_unique<kinematics::StructOfPointerSim>(800, 600, *vectorOfStructSim.get());
+	auto ompSimdSim = std::make_unique<kinematics::OmpSimdSim>(800, 600, *vectorOfStructSim.get());
+	auto ompForSim = std::make_unique<kinematics::OmpForSim>(800, 600, *vectorOfStructSim.get());
 
 	// `Update()` has obvious side-effects so it isn't ideal to reuse simulations, but may be accurate enough for
 	// this benchmark
@@ -23,6 +25,8 @@ TEST_CASE("Update", "[update]")
 	BENCHMARK("Update StructOfVectorSim: " + std::to_string(size)) { return structOfVectorSim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update StructOfArraySim: " + std::to_string(size)) { return structOfArraySim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update StructOfPointerSim: " + std::to_string(size)) { return structOfPointerSim->Update(TIME_CONSTANT); };
+	BENCHMARK("Update OmpSimdSim: " + std::to_string(size)) { return ompSimdSim->Update(TIME_CONSTANT); };
+	BENCHMARK("Update OmpForSim: " + std::to_string(size)) { return ompForSim->Update(TIME_CONSTANT); };
 }
 
 // TODO: This should be split into proper tests, but gives good confidence for benchmark as-is
