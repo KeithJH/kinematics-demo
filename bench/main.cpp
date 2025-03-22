@@ -14,6 +14,7 @@ TEST_CASE("Update", "[update]")
 	auto structOfArraySim =
 		std::make_unique<kinematics::StructOfArraySim<5'000'000>>(800, 600, *vectorOfStructSim.get());
 	auto structOfPointerSim = std::make_unique<kinematics::StructOfPointerSim>(800, 600, *vectorOfStructSim.get());
+	auto structOfAlignedSim = std::make_unique<kinematics::StructOfAlignedSim>(800, 600, *vectorOfStructSim.get());
 	auto ompSimdSim = std::make_unique<kinematics::OmpSimdSim>(800, 600, *vectorOfStructSim.get());
 	auto ompForSim = std::make_unique<kinematics::OmpForSim>(800, 600, *vectorOfStructSim.get());
 
@@ -25,6 +26,7 @@ TEST_CASE("Update", "[update]")
 	BENCHMARK("Update StructOfVectorSim: " + std::to_string(size)) { return structOfVectorSim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update StructOfArraySim: " + std::to_string(size)) { return structOfArraySim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update StructOfPointerSim: " + std::to_string(size)) { return structOfPointerSim->Update(TIME_CONSTANT); };
+	BENCHMARK("Update StructOfAlignedSim: " + std::to_string(size)) { return structOfAlignedSim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update OmpSimdSim: " + std::to_string(size)) { return ompSimdSim->Update(TIME_CONSTANT); };
 	BENCHMARK("Update OmpForSim: " + std::to_string(size)) { return ompForSim->Update(TIME_CONSTANT); };
 }
@@ -41,6 +43,7 @@ TEST_CASE("Copy", "[copy]")
 	auto structOfArraySim =
 		std::make_unique<kinematics::StructOfArraySim<5'000'000>>(800, 600, *structOfVectorSim.get());
 	auto structOfPointerSim = std::make_unique<kinematics::StructOfPointerSim>(800, 600, *original.get());
+	auto structOfAlignedSim = std::make_unique<kinematics::StructOfAlignedSim>(800, 600, *structOfPointerSim.get());
 
 	// Basic sanity test that all the sizes are set correctly
 	REQUIRE(original->GetNumBodies() == size);
@@ -48,12 +51,14 @@ TEST_CASE("Copy", "[copy]")
 	REQUIRE(structOfVectorSim->GetNumBodies() == size);
 	REQUIRE(structOfArraySim->GetNumBodies() == size);
 	REQUIRE(structOfPointerSim->GetNumBodies() == size);
+	REQUIRE(structOfAlignedSim->GetNumBodies() == size);
 
 	auto originalBodies = vectorOfStructSim->GetBodies();
 	auto vectorOfStructBodies = vectorOfStructSim->GetBodies();
 	auto structOfVectorBodies = structOfVectorSim->GetBodies();
 	auto structOfArrayBodies = structOfArraySim->GetBodies();
 	auto structOfPointerBodies = structOfPointerSim->GetBodies();
+	auto structOfAlignedBodies = structOfAlignedSim->GetBodies();
 
 	for (auto i = 0zu; i < size; i++)
 	{
@@ -92,6 +97,15 @@ TEST_CASE("Copy", "[copy]")
 		REQUIRE(originalBodies[i].color.g == structOfPointerBodies[i].color.g);
 		REQUIRE(originalBodies[i].color.b == structOfPointerBodies[i].color.b);
 		REQUIRE(originalBodies[i].color.a == structOfPointerBodies[i].color.a);
+
+		REQUIRE(originalBodies[i].x == structOfAlignedBodies[i].x);
+		REQUIRE(originalBodies[i].y == structOfAlignedBodies[i].y);
+		REQUIRE(originalBodies[i].horizontalSpeed == structOfAlignedBodies[i].horizontalSpeed);
+		REQUIRE(originalBodies[i].verticalSpeed == structOfAlignedBodies[i].verticalSpeed);
+		REQUIRE(originalBodies[i].color.r == structOfAlignedBodies[i].color.r);
+		REQUIRE(originalBodies[i].color.g == structOfAlignedBodies[i].color.g);
+		REQUIRE(originalBodies[i].color.b == structOfAlignedBodies[i].color.b);
+		REQUIRE(originalBodies[i].color.a == structOfAlignedBodies[i].color.a);
 	}
 }
 

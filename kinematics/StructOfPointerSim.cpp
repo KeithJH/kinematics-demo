@@ -69,7 +69,6 @@ std::vector<Body> StructOfPointerSim::GetBodies() const
 void StructOfPointerSim::Update(const float deltaTime)
 {
 	// TODO: is there a better way to use `__restrict__`?
-	// TODO: if not this could probably be refactored to a base class
 	UpdateHelper(deltaTime, _bodies.x, _bodies.y, _bodies.horizontalSpeed, _bodies.verticalSpeed);
 }
 
