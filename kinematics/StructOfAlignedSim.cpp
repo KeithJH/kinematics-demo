@@ -43,11 +43,11 @@ StructOfAlignedSim::StructOfAlignedSim(const float width, const float height, co
 
 StructOfAlignedSim::~StructOfAlignedSim()
 {
-	delete[] _bodies.x;
-	delete[] _bodies.y;
+	::operator delete[](_bodies.x, std::align_val_t(64));
+	::operator delete[](_bodies.y, std::align_val_t(64));
 
-	delete[] _bodies.horizontalSpeed;
-	delete[] _bodies.verticalSpeed;
+	::operator delete[](_bodies.horizontalSpeed, std::align_val_t(64));
+	::operator delete[](_bodies.verticalSpeed, std::align_val_t(64));
 
 	delete[] _bodies.color;
 }
@@ -93,11 +93,11 @@ void StructOfAlignedSim::SetNumBodies(const size_t totalNumBodies)
 		auto oldBodies = GetBodies();
 
 		// Free previous memory
-		delete[] _bodies.x;
-		delete[] _bodies.y;
+		::operator delete[](_bodies.x, std::align_val_t(64));
+		::operator delete[](_bodies.y, std::align_val_t(64));
 
-		delete[] _bodies.horizontalSpeed;
-		delete[] _bodies.verticalSpeed;
+		::operator delete[](_bodies.horizontalSpeed, std::align_val_t(64));
+		::operator delete[](_bodies.verticalSpeed, std::align_val_t(64));
 
 		delete[] _bodies.color;
 
