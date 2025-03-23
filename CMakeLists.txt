@@ -44,7 +44,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif ()
 
 add_compile_options(-march=native)
-#add_compile_options(-ffast-math)
 add_subdirectory(kinematics)
 add_subdirectory(gui)
 add_subdirectory(bench)

@@ -5,7 +5,7 @@
 #include "App.h"
 
 App::App(const float width, const float height, const size_t initialNumBodies)
-	: _simulation(std::make_unique<kinematics::StructOfAlignedSim>(width, height, initialNumBodies))
+	: _simulation(std::make_unique<kinematics::StructOfOversizedSim>(width, height, initialNumBodies))
 {
 }
 
