@@ -3,6 +3,12 @@
 #include <raylib.h>
 #include <vector>
 
+#if __has_cpp_attribute(assume)
+#define ASSUME(...) [[assume(__VA_ARGS__)]]
+#else
+#define ASSUME(...) __builtin_assume(__VA_ARGS__)
+#endif
+
 namespace kinematics
 {
 constexpr int BODY_RADIUS = 10;

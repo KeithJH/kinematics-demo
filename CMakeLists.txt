@@ -38,7 +38,7 @@ FetchContent_MakeAvailable(Catch2)
 # Our Project
 project(kinematics-demo CXX)
 
-include("cmake/Warnings.gcc.cmake")
+include("cmake/Warnings.cmake")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   include("cmake/Sanitizers.gcc.cmake")
 endif ()

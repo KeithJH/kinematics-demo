@@ -183,7 +183,7 @@ void StructOfOversizedSim::UpdateHelper(const float deltaTime, float *__restrict
 	// work should be equally divisible by vector instructions.
 	const auto numBodies = _updateBoundary;
 	assert(numBodies % 16 == 0);
-	[[assume(numBodies % 16 == 0)]];
+	ASSUME(numBodies % 16 == 0);
 
 	for (auto i = 0zu; i < numBodies; i++)
 	{
