@@ -35,12 +35,13 @@ int main(int argc, char **argv)
 		float position;
 		float speed;
 		float _unused[6];
+		Point(const float pos, const float sp) : position(pos), speed(sp) {};
 	};
 
 	std::vector<Point> points;
 	points.reserve(numPoints);
 
-	for (auto i = 0zu; i < numPoints; i++)
+	for (size_t i = 0; i < numPoints; i++)
 	{
 		const float position = static_cast<float>(rand() % 100);
 		const float speed = static_cast<float>(rand() % 1000) / 100.f;
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
 	std::printf("Starting %zu update loops of %zu points...", numIterations, numPoints);
 	std::fflush(stdout);
 	const auto startTime = std::chrono::steady_clock::now();
-	for (auto iteration = 0zu; iteration < numIterations; iteration++)
+	for (size_t iteration = 0; iteration < numIterations; iteration++)
 	{
 		for (auto &point : points)
 		{

@@ -1,7 +1,7 @@
 gcc := g++
 clang := clang++
 
-common_flags := -std=c++23 -O3 -DNDEBUG
+common_flags := -O3 -DNDEBUG
 warning_flags := -Werror -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wsuggest-override
 gcc_warning_flags := $(warning_flags) -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast
 

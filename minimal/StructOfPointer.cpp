@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	points.speed = new float[numPoints];
 
 	// Create pseudo-random points so the result doesn't get optimized to a constant
-	for (auto i = 0zu; i < numPoints; i++)
+	for (size_t i = 0; i < numPoints; i++)
 	{
 		const float position = static_cast<float>(rand() % 100);
 		const float speed = static_cast<float>(rand() % 1000) / 100.f;
@@ -53,9 +53,9 @@ int main(int argc, char **argv)
 	std::printf("Starting %zu update loops of %zu points...", numIterations, numPoints);
 	std::fflush(stdout);
 	const auto startTime = std::chrono::steady_clock::now();
-	for (auto i = 0zu; i < numIterations; i++)
+	for (size_t i = 0; i < numIterations; i++)
 	{
-		for (auto point = 0zu; point < numPoints; point++)
+		for (size_t point = 0; point < numPoints; point++)
 		{
 			points.position[point] += points.speed[point] * DELTA_TIME;
 
