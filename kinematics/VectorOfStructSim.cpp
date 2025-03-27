@@ -44,21 +44,13 @@ void VectorOfStructSim::Update(const float deltaTime)
 		body.y += body.verticalSpeed * deltaTime;
 
 		// Bounce horizontally
-		if (body.x - BODY_RADIUS < 0 && body.horizontalSpeed < 0)
-		{
-			body.horizontalSpeed *= -1;
-		}
-		if (body.x + BODY_RADIUS > _width && body.horizontalSpeed > 0)
+		if (BounceCheck(body.x, body.horizontalSpeed, _width))
 		{
 			body.horizontalSpeed *= -1;
 		}
 
 		// Bounce vertically
-		if (body.y - BODY_RADIUS < 0 && body.verticalSpeed < 0)
-		{
-			body.verticalSpeed *= -1;
-		}
-		if (body.y + BODY_RADIUS > _height && body.verticalSpeed > 0)
+		if (BounceCheck(body.y, body.verticalSpeed, _height))
 		{
 			body.verticalSpeed *= -1;
 		}
