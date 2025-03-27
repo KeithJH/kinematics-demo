@@ -15,6 +15,24 @@ Benchmarking application for `kinematics` implementations without any graphical 
 ### `minimal`
 Small, independent, (re)implementations scoped down to more easily inspect the generated executables/rough timing.
 
+## Implementation Notes
+### `kinematics`
+* [VectorOfStructSim](./notes/kinematics/VectorOfStruct.md): Conventional Array of Structures (AoS) layout using a `std::vector<Body>`. This means data for various fields is interleaved in memory, which can present a challenge for vectorization.
+* [StructOfVectorSim](./notes/kinematics/StructOfVectorSim.md): Structure of Arrays (SoA) style layout using parallel `std::vector<float>` fields. This means data for a particular field is entirely contiguous in memory which typically allows for easier vectorization.
+* [OmpSimdSim](./notes/kinematics/OmpSimdSim.md): Same layout as `StructOfVectorSim`, but uses OpenMP for vectorizing code.
+* [StructOfArraySim](./notes/kinematics/StructOfArraySim.md): SoA layout that uses `std::array<float, MAX_SIZE>` fields. Data for particular fields are entirely contiguous with a compile-time cap on data size.
+* [StructOfPointerSim](./notes/kinematics/StructOfPointerSim.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]`.
+* [StructOfAlignedSim](./notes/kinematics/StructOfAlignedSim.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment.
+* [StructOfOversizedSim](./notes/kinematics/StructOfOversizedSim.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment and ensuring adequate capacity that allows for vector commands to "overrun" the actual amount of `Bodies` in the simulation to avoid non-vectorized "tail" calculations.
+
+### `minimal`
+* [VectorOfStruct](./notes/minimal/VectorOfStruct.md): Conventional AoS layout using a `std::vector<Point>`. This means data for various fields is interleaved in memory, which can present a challenge for vectorization.
+* [VectorOfLargeStruct](./notes/minimal/VectorOfLargeStruct.md): Conventional AoS layout using a `std::vector<Point>`. Incorporates unused fields to mimic data that may be used in a larger application, which reduces the amount of "tricks" that can be used to still vectorize with interleaved data.
+* [StructOfVector](./notes/minimal/StructOfVector.md): SoA style layout using parallel `std::vector<float>` fields. This means data for a particular field is entirely contiguous in memory which typically allows for easier vectorization.
+* [StructOfPointer](./notes/minimal/StructOfPointer.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]`.
+* [Aligned](./notes/minimal/Aligned.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment.
+* [Oversized](./notes/minimal/Oversized.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment and ensuring adequate capacity that allows for vector commands to "overrun" the actual amount of `Points` in the calculation to avoid non-vectorized "tail" calculations.
+
 ## Building
 Most of the project is set up with `CMake` using `FetchContent` for a few packages.
 * [`Catch2`](https://github.com/catchorg/Catch2) is used for benchmarking and a touch of testing
