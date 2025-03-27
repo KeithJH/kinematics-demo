@@ -6,7 +6,10 @@
 
 namespace kinematics
 {
+constexpr size_t ALIGNMENT_SIZE = 64;
+constexpr std::align_val_t ALIGNMENT = std::align_val_t(ALIGNMENT_SIZE);
 constexpr size_t BODY_ALLOCATE_SIZE = 16;
+
 size_t CalculateUpdateBoundary(const size_t size)
 {
 	const auto remainder = size % BODY_ALLOCATE_SIZE;
@@ -20,10 +23,10 @@ StructOfOversizedSim::StructOfOversizedSim(const float width, const float height
 	_updateBoundary = CalculateUpdateBoundary(numBodies);
 
 	// Allocate initial memory that can fit all the bodies
-	_bodies.x = new (std::align_val_t(64)) float[_updateBoundary];
-	_bodies.y = new (std::align_val_t(64)) float[_updateBoundary];
-	_bodies.horizontalSpeed = new (std::align_val_t(64)) float[_updateBoundary];
-	_bodies.verticalSpeed = new (std::align_val_t(64)) float[_updateBoundary];
+	_bodies.x = new (ALIGNMENT) float[_updateBoundary];
+	_bodies.y = new (ALIGNMENT) float[_updateBoundary];
+	_bodies.horizontalSpeed = new (ALIGNMENT) float[_updateBoundary];
+	_bodies.verticalSpeed = new (ALIGNMENT) float[_updateBoundary];
 	_bodies.color = new Color[_updateBoundary]; // TODO: could consider just using numBodies here
 	_maxBodies = _updateBoundary;
 
@@ -43,10 +46,10 @@ StructOfOversizedSim::StructOfOversizedSim(const float width, const float height
 	_updateBoundary = CalculateUpdateBoundary(totalNumBodies);
 
 	_maxBodies = _updateBoundary;
-	_bodies.x = new (std::align_val_t(64)) float[_updateBoundary];
-	_bodies.y = new (std::align_val_t(64)) float[_updateBoundary];
-	_bodies.horizontalSpeed = new (std::align_val_t(64)) float[_updateBoundary];
-	_bodies.verticalSpeed = new (std::align_val_t(64)) float[_updateBoundary];
+	_bodies.x = new (ALIGNMENT) float[_updateBoundary];
+	_bodies.y = new (ALIGNMENT) float[_updateBoundary];
+	_bodies.horizontalSpeed = new (ALIGNMENT) float[_updateBoundary];
+	_bodies.verticalSpeed = new (ALIGNMENT) float[_updateBoundary];
 
 	_bodies.color = new Color[_updateBoundary];
 
@@ -64,11 +67,11 @@ StructOfOversizedSim::StructOfOversizedSim(const float width, const float height
 
 StructOfOversizedSim::~StructOfOversizedSim()
 {
-	::operator delete[](_bodies.x, std::align_val_t(64));
-	::operator delete[](_bodies.y, std::align_val_t(64));
+	::operator delete[](_bodies.x, ALIGNMENT);
+	::operator delete[](_bodies.y, ALIGNMENT);
 
-	::operator delete[](_bodies.horizontalSpeed, std::align_val_t(64));
-	::operator delete[](_bodies.verticalSpeed, std::align_val_t(64));
+	::operator delete[](_bodies.horizontalSpeed, ALIGNMENT);
+	::operator delete[](_bodies.verticalSpeed, ALIGNMENT);
 
 	delete[] _bodies.color;
 }
@@ -115,19 +118,19 @@ void StructOfOversizedSim::SetNumBodies(const size_t totalNumBodies)
 		auto oldBodies = GetBodies();
 
 		// Free previous memory
-		::operator delete[](_bodies.x, std::align_val_t(64));
-		::operator delete[](_bodies.y, std::align_val_t(64));
+		::operator delete[](_bodies.x, ALIGNMENT);
+		::operator delete[](_bodies.y, ALIGNMENT);
 
-		::operator delete[](_bodies.horizontalSpeed, std::align_val_t(64));
-		::operator delete[](_bodies.verticalSpeed, std::align_val_t(64));
+		::operator delete[](_bodies.horizontalSpeed, ALIGNMENT);
+		::operator delete[](_bodies.verticalSpeed, ALIGNMENT);
 
 		delete[] _bodies.color;
 
 		// Allocate new memory that can fit all the bodies
-		_bodies.x = new (std::align_val_t(64)) float[_updateBoundary];
-		_bodies.y = new (std::align_val_t(64)) float[_updateBoundary];
-		_bodies.horizontalSpeed = new (std::align_val_t(64)) float[_updateBoundary];
-		_bodies.verticalSpeed = new (std::align_val_t(64)) float[_updateBoundary];
+		_bodies.x = new (ALIGNMENT) float[_updateBoundary];
+		_bodies.y = new (ALIGNMENT) float[_updateBoundary];
+		_bodies.horizontalSpeed = new (ALIGNMENT) float[_updateBoundary];
+		_bodies.verticalSpeed = new (ALIGNMENT) float[_updateBoundary];
 
 		_bodies.color = new Color[_updateBoundary];
 
@@ -174,10 +177,10 @@ void StructOfOversizedSim::UpdateHelper(const float deltaTime, float *__restrict
                                         float *__restrict__ bodiesHorizontalSpeed,
                                         float *__restrict__ bodiesVerticalSpeed)
 {
-	bodiesX = std::assume_aligned<64>(bodiesX);
-	bodiesY = std::assume_aligned<64>(bodiesY);
-	bodiesHorizontalSpeed = std::assume_aligned<64>(bodiesHorizontalSpeed);
-	bodiesVerticalSpeed = std::assume_aligned<64>(bodiesVerticalSpeed);
+	bodiesX = std::assume_aligned<ALIGNMENT_SIZE>(bodiesX);
+	bodiesY = std::assume_aligned<ALIGNMENT_SIZE>(bodiesY);
+	bodiesHorizontalSpeed = std::assume_aligned<ALIGNMENT_SIZE>(bodiesHorizontalSpeed);
+	bodiesVerticalSpeed = std::assume_aligned<ALIGNMENT_SIZE>(bodiesVerticalSpeed);
 
 	// This **should** be enough to tell some compilers that it needn't worry as much about boundary conditions as the
 	// work should be equally divisible by vector instructions.
