@@ -71,7 +71,7 @@ class Simulation
 	RenderTexture2D _bodyRender;
 };
 
-class VectorOfStructSim : public Simulation
+class VectorOfStructSim final: public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -124,7 +124,7 @@ class StructOfVectorSim : public Simulation
 	Bodies _bodies;
 };
 
-class OmpSimdSim : public StructOfVectorSim
+class OmpSimdSim final: public StructOfVectorSim
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -135,10 +135,10 @@ class OmpSimdSim : public StructOfVectorSim
 	OmpSimdSim(const float width, const float height, const Simulation &toCopy);
 
 	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
-	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) override;
+	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) final;
 };
 
-class OmpForSim : public StructOfVectorSim
+class OmpForSim final: public StructOfVectorSim
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -149,10 +149,10 @@ class OmpForSim : public StructOfVectorSim
 	OmpForSim(const float width, const float height, const Simulation &toCopy);
 
 	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
-	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) override;
+	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) final;
 };
 
-class StructOfPointerSim : public Simulation
+class StructOfPointerSim final: public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -186,7 +186,7 @@ class StructOfPointerSim : public Simulation
 };
 
 // TODO: Could refactor for less duplication with StructOfPointerSim
-class StructOfAlignedSim : public Simulation
+class StructOfAlignedSim final: public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -204,7 +204,7 @@ class StructOfAlignedSim : public Simulation
 	std::vector<Body> GetBodies() const override;
 
 	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
-	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) override;
+	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) final;
 
   private:
 	void AddBody(const Body body);
@@ -223,7 +223,7 @@ class StructOfAlignedSim : public Simulation
 };
 
 // TODO: Could refactor for less duplication with StructOfAlignedSim
-class StructOfOversizedSim : public Simulation
+class StructOfOversizedSim final: public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -241,7 +241,7 @@ class StructOfOversizedSim : public Simulation
 	std::vector<Body> GetBodies() const override;
 
 	void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
-	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) override;
+	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) final;
 
   private:
 	void AddBody(const Body body);
@@ -260,7 +260,7 @@ class StructOfOversizedSim : public Simulation
 	size_t _updateBoundary;
 };
 
-template <size_t MAX_SIZE> class StructOfArraySim : public Simulation
+template <size_t MAX_SIZE> class StructOfArraySim final: public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
