@@ -34,7 +34,7 @@ void Simulation::SetBounds(const float width, const float height)
 	_height = height;
 }
 
-Body Simulation::GenerateRandomBody()
+Body Simulation::GenerateRandomBody() const
 {
 	return Body{// Random starting position of a body that is in bounds
 	            .x = static_cast<float>(GetRandomValue(BODY_RADIUS, static_cast<int>(_width - BODY_RADIUS))),
@@ -50,8 +50,13 @@ Body Simulation::GenerateRandomBody()
 	                      static_cast<unsigned char>(GetRandomValue(0, 255)), 255}};
 }
 
+bool Simulation::BounceCheck(const float position, const float speed, const float bounds) const
+{
+	return (position - BODY_RADIUS < 0 && speed < 0) || (position + BODY_RADIUS > bounds && speed > 0);
+}
+
 void Simulation::UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
-                                      float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed)
+                              float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed)
 {
 	const auto numBodies = GetNumBodies();
 	for (auto i = 0zu; i < numBodies; i++)
@@ -61,21 +66,13 @@ void Simulation::UpdateHelper(const float deltaTime, float *__restrict__ bodiesX
 		bodiesY[i] += bodiesVerticalSpeed[i] * deltaTime;
 
 		// Bounce horizontally
-		if (bodiesX[i] - BODY_RADIUS < 0 && bodiesHorizontalSpeed[i] < 0)
-		{
-			bodiesHorizontalSpeed[i] *= -1;
-		}
-		if (bodiesX[i] + BODY_RADIUS > _width && bodiesHorizontalSpeed[i] > 0)
+		if (BounceCheck(bodiesX[i], bodiesHorizontalSpeed[i], _width))
 		{
 			bodiesHorizontalSpeed[i] *= -1;
 		}
 
 		// Bounce vertically
-		if (bodiesY[i] - BODY_RADIUS < 0 && bodiesVerticalSpeed[i] < 0)
-		{
-			bodiesVerticalSpeed[i] *= -1;
-		}
-		if (bodiesY[i] + BODY_RADIUS > _height && bodiesVerticalSpeed[i] > 0)
+		if (BounceCheck(bodiesY[i], bodiesVerticalSpeed[i], _height))
 		{
 			bodiesVerticalSpeed[i] *= -1;
 		}

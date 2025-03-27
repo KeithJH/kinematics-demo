@@ -56,9 +56,10 @@ class Simulation
 	void SetBounds(const float width, const float height);
 
   protected:
-	Body GenerateRandomBody();
+	Body GenerateRandomBody() const;
 
-	// TODO: there's probably a better place for this
+	// TODO: there's probably a better place for these
+	bool BounceCheck(const float position, const float speed, const float bounds) const;
 	virtual void UpdateHelper(const float deltaTime, float *__restrict__ bodiesX, float *__restrict__ bodiesY,
 	                          float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed);
 
