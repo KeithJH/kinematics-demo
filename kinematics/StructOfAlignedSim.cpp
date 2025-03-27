@@ -169,21 +169,13 @@ void StructOfAlignedSim::UpdateHelper(const float deltaTime, float *__restrict__
 		bodiesY[i] += bodiesVerticalSpeed[i] * deltaTime;
 
 		// Bounce horizontally
-		if (bodiesX[i] - BODY_RADIUS < 0 && bodiesHorizontalSpeed[i] < 0)
-		{
-			bodiesHorizontalSpeed[i] *= -1;
-		}
-		if (bodiesX[i] + BODY_RADIUS > _width && bodiesHorizontalSpeed[i] > 0)
+		if (BounceCheck(bodiesX[i], bodiesHorizontalSpeed[i], _width))
 		{
 			bodiesHorizontalSpeed[i] *= -1;
 		}
 
 		// Bounce vertically
-		if (bodiesY[i] - BODY_RADIUS < 0 && bodiesVerticalSpeed[i] < 0)
-		{
-			bodiesVerticalSpeed[i] *= -1;
-		}
-		if (bodiesY[i] + BODY_RADIUS > _height && bodiesVerticalSpeed[i] > 0)
+		if (BounceCheck(bodiesY[i], bodiesVerticalSpeed[i], _height))
 		{
 			bodiesVerticalSpeed[i] *= -1;
 		}
