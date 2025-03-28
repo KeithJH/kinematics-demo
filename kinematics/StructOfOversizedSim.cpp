@@ -13,7 +13,7 @@ constexpr size_t BODY_ALLOCATE_SIZE = 16;
 size_t CalculateUpdateBoundary(const size_t size)
 {
 	const auto remainder = size % BODY_ALLOCATE_SIZE;
-	return size + (BODY_ALLOCATE_SIZE - remainder);
+	return remainder ? size + BODY_ALLOCATE_SIZE - remainder : size;
 }
 
 StructOfOversizedSim::StructOfOversizedSim(const float width, const float height, const size_t numBodies)

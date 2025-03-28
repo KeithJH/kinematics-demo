@@ -4,6 +4,12 @@
 #include <cstdlib>
 #include <new>
 
+#if __has_cpp_attribute(assume)
+#define ASSUME(...) [[assume(__VA_ARGS__)]]
+#else
+#define ASSUME(...) __builtin_assume(__VA_ARGS__)
+#endif
+
 int main(int argc, char **argv)
 {
 	constexpr float DELTA_TIME = 1.f / 60.f;
@@ -39,11 +45,11 @@ int main(int argc, char **argv)
 	};
 
 	Points points;
-	points.position = new (ALIGNMENT) float[numPoints];
-	points.speed = new (ALIGNMENT) float[numPoints];
 
-	size_t numPointsOversized;
-	numPointsOversized = numPoints + (POINTS_MULTIPLE - (numPoints % POINTS_MULTIPLE));
+	const size_t remainder = numPoints % POINTS_MULTIPLE;
+	const size_t numPointsOversized = remainder ? numPoints + POINTS_MULTIPLE - remainder : numPoints;
+	points.position = new (ALIGNMENT) float[numPointsOversized];
+	points.speed = new (ALIGNMENT) float[numPointsOversized];
 
 	// Create pseudo-random points so the result doesn't get optimized to a constant
 	for (size_t i = 0; i < numPoints; i++)
@@ -61,6 +67,7 @@ int main(int argc, char **argv)
 	const auto startTime = std::chrono::steady_clock::now();
 	for (size_t i = 0; i < numIterations; i++)
 	{
+		ASSUME(numPointsOversized % POINTS_MULTIPLE == 0);
 		for (size_t point = 0; point < numPointsOversized; point++)
 		{
 			points.position[point] += points.speed[point] * DELTA_TIME;
