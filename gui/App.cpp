@@ -5,8 +5,13 @@
 #include "App.h"
 
 App::App(const float width, const float height, const size_t initialNumBodies)
-	: _simulation(std::make_unique<kinematics::StructOfOversizedSim>(width, height, initialNumBodies))
+	: _simulation(std::make_unique<kinematics::VectorOfStructSim>(width, height, initialNumBodies))
 {
+	if (initialNumBodies >= 1'000'000)
+	{
+		_renderBodies = false;
+		_renderStats = true;
+	}
 }
 
 void App::Update()
