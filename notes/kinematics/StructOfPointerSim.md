@@ -39,7 +39,6 @@ Ubuntu clang version 18.1.3 (1ubuntu1)
 $ ./out/build/clang/bench/kinematics-demo-bench --benchmark-no-analysis --rng-seed 433152058
 benchmark name                            samples    iterations          mean
 -------------------------------------------------------------------------------
-<BENCH>
 Update StructOfPointerSim: 1000000             100             1     164.29 us
 Update StructOfPointerSim: 5000000             100             1     2.6562 ms
 ```

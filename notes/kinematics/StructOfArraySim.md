@@ -54,6 +54,7 @@ $ perf record -D 1000 ./out/build/release/gui/kinematics-demo-gui 5000000
 <wait some time, then close>
 
 $ perf annotate -Mintel
+kinematics::StructOfArraySim<5000000ul>::Update(float)
 <snip>
   0.46 │ e9:   vmovups      zmm2,ZMMWORD PTR [rcx+0x2625a00]
   0.62 │       vmovups      zmm1,ZMMWORD PTR [rcx+0x3938700]
@@ -100,6 +101,7 @@ $ perf record -D 1000 ./out/build/clang/gui/kinematics-demo-gui 5000000
 <wait some time, then close>
 
 $ perf annotate -Mintel
+kinematics::StructOfArraySim<5000000ul>::Update(float)
 <snip>
   2.05 │190:   vmovups      zmm9,ZMMWORD PTR [rcx+rsi*4-0x1312d00]
   2.28 │       vmovups      zmm10,ZMMWORD PTR [rcx+rsi*4-0x3938700]

@@ -76,6 +76,7 @@ $ perf record -D 1000 ./out/build/release/gui/kinematics-demo-gui 5000000
 <wait some time, then close>
 
 $ perf annotate -Mintel
+kinematics::Simulation::UpdateHelper(float, float*, float*, float*, float*)
 <snip>
   1.11 │ c0:   vcmpltps     k1,zmm1,zmm0
   1.25 │       vaddps       zmm2,zmm3,zmm7
@@ -126,8 +127,8 @@ $ perf record -D 1000 ./out/build/clang/gui/kinematics-demo-gui 5000000
 <wait some time, then close>
 
 $ perf annotate -Mintel
+kinematics::Simulation::UpdateHelper(float, float*, float*, float*, float*)
 <snip>
-nop
   0.96 │190:   vmovups      zmm9,ZMMWORD PTR [r14+rdx*4]
   0.70 │       vmovups      zmm10,ZMMWORD PTR [r12+rdx*4]
   0.50 │       vmovups      zmm11,ZMMWORD PTR [rbx+rdx*4]

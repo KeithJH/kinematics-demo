@@ -73,6 +73,7 @@ $ perf record -D 1000 ./out/build/release/gui/kinematics-demo-gui 5000000
 <wait some time, then close>
 
 $ perf annotate -Mintel
+kinematics::VectorOfStructSim::Update(float)
 <snip>
   3.49 │40:   vaddss      xmm3,xmm3,xmm4
   8.69 │      vcomiss     xmm3,xmm9
@@ -115,6 +116,7 @@ $ perf record -D 1000 ./out/build/clang/gui/kinematics-demo-gui 5000000
 <wait some time, then close>
 
 $ perf annotate -Mintel
+kinematics::VectorOfStructSim::Update(float)
 <snip>
   0.17 │       vfmadd231ps     zmm27,zmm29,zmm3
   0.28 │       vfmadd231ps     zmm28,zmm30,zmm3
