@@ -66,9 +66,10 @@ The provided `Makefile` will build a variety of configurations using `g++` and `
 
 ## Running
 ### `gui`
-The application does not take any command line arguments and can be started simply with:
+The application has one optional command line argument to specify the number of bodies to start the simulation with, otherwise the simulation starts with a single body. If the initial count is high enough rendering of the bodies is also disabled.
+
 ```
-$ ./out/build/release/gui/kinematics-demo-gui
+$ ./out/build/release/gui/kinematics-demo-gui [number_of_initial_bodies]
 ```
 
 Once running there are keyboard actions to interact with the simulation:
