@@ -62,7 +62,27 @@ $ cmake --build out/build/release/
 ```
 
 ### `minimal`
-The provided `Makefile` will build a variety of configurations using `g++` and `clang++`, with and without the flag `-march=native`; however, as all the implementations are independent it should be easy enough to build any given one with a compiler and flags of choice.
+The `Makefile` provides the following targets:
+* `all` (default): compiles all the implementations
+* `clean`: removes the created binaries
+* `run`: runs each of the implementations with default arguments
+
+And uses the following optional variables:
+* `CXX`: The C++ compiler to use (or system default)
+* `CXX_FLAGS`: The flags to pass to the compiler (or system default)
+* `OUT`: Directory (or default of `./out`)
+
+Example:
+```
+$ make OUT="./custom" CXX="clang++" CXX_FLAGS="-Os" all
+```
+
+To aid in comparing various compiling options the bash script `make.sh` invokes `make` with multiple combinations of compilers and flags. The script also supports the same targets as the `Makefile`.
+
+Example:
+```
+$ ./make.sh all
+```
 
 ## Running
 ### `gui`
@@ -87,7 +107,14 @@ $ ./out/build/release/bench/kinematics-demo-bench --benchmark-no-analysis
 ```
 
 ### `minimal`
-If compiling with the given `Makefile` one can run `make run` to run each of the implementations with the default arguments that runs 10,000 update loops of 1,000,000 points. If running a given implementation from the command line you can specify the number of update loops and number of points such as:
+If compiling with the given `Makefile` or `make.sh`, one can use the `run` target to run each of the implementations with the default arguments that runs 10,000 update loops of 1,000,000 points.
 ```
-$ ./out/Oversized.native.gcc [<number_of_points> [<number_of_update_loops>]]
+$ make run
+# OR
+$ ./make.sh run
+```
+
+If running a given implementation from the command line one can specify the number of update loops and number of points such as:
+```
+$ ./out/Oversized [<number_of_points> [<number_of_update_loops>]]
 ```
