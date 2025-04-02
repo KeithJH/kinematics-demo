@@ -17,7 +17,7 @@ Small, independent, (re)implementations scoped down to more easily inspect the g
 
 ## Implementation Notes
 ### `kinematics`
-* [VectorOfStructSim](./notes/kinematics/VectorOfStruct.md): Conventional Array of Structures (AoS) layout using a `std::vector<Body>`. This means data for various fields is interleaved in memory, which can present a challenge for vectorization.
+* [VectorOfStructSim](./notes/kinematics/VectorOfStructSim.md): Conventional Array of Structures (AoS) layout using a `std::vector<Body>`. This means data for various fields is interleaved in memory, which can present a challenge for vectorization.
 * [StructOfVectorSim](./notes/kinematics/StructOfVectorSim.md): Structure of Arrays (SoA) style layout using parallel `std::vector<float>` fields. This means data for a particular field is entirely contiguous in memory which typically allows for easier vectorization.
 * [OmpSimdSim](./notes/kinematics/OmpSimdSim.md): Same layout as `StructOfVectorSim`, but uses OpenMP for vectorizing code.
 * [StructOfArraySim](./notes/kinematics/StructOfArraySim.md): SoA layout that uses `std::array<float, MAX_SIZE>` fields. Data for particular fields are entirely contiguous with a compile-time cap on data size.
