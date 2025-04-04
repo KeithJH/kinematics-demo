@@ -61,7 +61,7 @@ std::vector<Body> StructOfAlignedSim::GetBodies() const
 	copy.reserve(GetNumBodies());
 
 	const auto numBodies = GetNumBodies();
-	for (auto i = 0zu; i < numBodies; i++)
+	for (size_t i = 0; i < numBodies; i++)
 	{
 		copy.emplace_back(_bodies.x[i], _bodies.y[i], _bodies.horizontalSpeed[i], _bodies.verticalSpeed[i],
 		                  _bodies.color[i]);
@@ -81,7 +81,7 @@ void StructOfAlignedSim::Draw() const
 	assert(IsWindowReady());
 
 	const auto numBodies = GetNumBodies();
-	for (auto i = 0zu; i < numBodies; i++)
+	for (size_t i = 0; i < numBodies; i++)
 	{
 		DrawTexture(_bodyRender.texture, static_cast<int>(_bodies.x[i] - BODY_RADIUS),
 		            static_cast<int>(_bodies.y[i] - BODY_RADIUS), _bodies.color[i]);
@@ -162,7 +162,7 @@ void StructOfAlignedSim::UpdateHelper(const float deltaTime, float *__restrict__
 	bodiesVerticalSpeed = std::assume_aligned<ALIGNMENT_SIZE>(bodiesVerticalSpeed);
 
 	const auto numBodies = GetNumBodies();
-	for (auto i = 0zu; i < numBodies; i++)
+	for (size_t i = 0; i < numBodies; i++)
 	{
 		// Update position based on speed
 		bodiesX[i] += bodiesHorizontalSpeed[i] * deltaTime;

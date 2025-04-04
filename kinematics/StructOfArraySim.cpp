@@ -33,7 +33,7 @@ template <size_t size> std::vector<Body> StructOfArraySim<size>::GetBodies() con
 	copy.reserve(GetNumBodies());
 
 	const auto numBodies = GetNumBodies();
-	for (auto i = 0zu; i < numBodies; i++)
+	for (size_t i = 0; i < numBodies; i++)
 	{
 		copy.emplace_back(_bodies.x[i], _bodies.y[i], _bodies.horizontalSpeed[i], _bodies.verticalSpeed[i],
 		                  _bodies.color[i]);
@@ -54,7 +54,7 @@ template <size_t size> void StructOfArraySim<size>::Draw() const
 	assert(IsWindowReady());
 
 	const auto numBodies = GetNumBodies();
-	for (auto i = 0zu; i < numBodies; i++)
+	for (size_t i = 0; i < numBodies; i++)
 	{
 		DrawTexture(_bodyRender.texture, static_cast<int>(_bodies.x[i] - BODY_RADIUS),
 		            static_cast<int>(_bodies.y[i] - BODY_RADIUS), _bodies.color[i]);

@@ -65,7 +65,7 @@ TEST_CASE("Copy", "[copy]")
 	auto structOfAlignedBodies = structOfAlignedSim->GetBodies();
 	auto structOfOversizedBodies = structOfOversizedSim->GetBodies();
 
-	for (auto i = 0zu; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 	{
 		REQUIRE(originalBodies[i].x == vectorOfStructBodies[i].x);
 		REQUIRE(originalBodies[i].y == vectorOfStructBodies[i].y);

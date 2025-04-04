@@ -15,7 +15,7 @@ void OmpSimdSim::UpdateHelper(const float deltaTime, float *__restrict__ bodiesX
 {
 	const auto numBodies = GetNumBodies();
 #pragma omp simd
-	for (auto i = 0zu; i < numBodies; i++)
+	for (size_t i = 0; i < numBodies; i++)
 	{
 		// Update position based on speed
 		bodiesX[i] += bodiesHorizontalSpeed[i] * deltaTime;
