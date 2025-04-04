@@ -121,7 +121,7 @@ It's at this point that we start to see "true" vectorization, as commands with t
 * `unpcklps`: Unpack and interleave low packed single precision floats. Allows rearranging registers so that results from computations on `position` and `speed` values can be stored back as `Points` in memory.
 
 ```
-$ perf record -D 100 ./out/gcc/O0/default/VectorOfStruct
+$ perf record -D 100 ./out/gcc/O3/default/VectorOfStruct
 $ perf report -Mintel
 <snip>
   1.38 │170:   movups     xmm3,XMMWORD PTR [rdx]
@@ -183,7 +183,7 @@ $ perf report -Mintel
 Once we start compiling for the native architecture (on a Zen 4 test system) we even start to see full 512-bit vector instructions instead of the default 128-bit ones. Not only that, but we also see our first fused-multiply-add instruction, which is perfect for the kinematics use case. Comparisons also start using masking functionality (with `k` values). Shifting data around is similar but now uses `vpermt2ps` (full permute from two tables).
 
 ```
-$ perf record -D 100 ./out/gcc/O0/default/VectorOfStruct
+$ perf record -D 100 ./out/gcc/O3/native/VectorOfStruct
 $ perf report -Mintel
 <snip>
   0.95 │1b0:   vmovups      zmm1,ZMMWORD PTR [rax]
@@ -215,6 +215,7 @@ $ perf report -Mintel
   1.49 │       vmovups      ZMMWORD PTR [rax-0x80],zmm3
   2.09 │       vmovups      ZMMWORD PTR [rax-0x40],zmm0
   1.11 │       cmp          r8,rax
+       │     ↑ jne          1b0
 <snip>
 ```
 
@@ -222,7 +223,7 @@ $ perf report -Mintel
 `clang` also attempts to vectorize the code, but in a slightly different way that appears to not work as well on the test system. It still uses `vpermt2ps` but also `vscatterdps` (scatter packed single using signed DWORD indices).
 
 ```
-$ perf record -D 100 ./out/gcc/O0/default/VectorOfStruct
+$ perf record -D 100 ./out/clang/O3/native/VectorOfStruct
 $ perf report -Mintel
 <snip>
   0.16 │8e0:   vmovups      zmm18,ZMMWORD PTR [r12]
