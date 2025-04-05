@@ -3,8 +3,8 @@
 out="./out"
 
 declare -A compilers
-compilers["clang"]="clang++"
-compilers["gcc"]="g++"
+compilers["clang"]="clang++ --std=c++20"
+compilers["gcc"]="g++ --std=c++20"
 
 declare -A warningFlags
 warningFlags["clang"]="-Werror -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wsuggest-override"

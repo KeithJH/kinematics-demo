@@ -30,7 +30,8 @@ int main(int argc, char **argv)
 	}
 
 	// Allocate memory for points
-	constexpr std::align_val_t ALIGNMENT = std::align_val_t(64);
+	constexpr size_t ALIGNMENT_SIZE = 64;
+	constexpr std::align_val_t ALIGNMENT = std::align_val_t(ALIGNMENT_SIZE);
 	struct Points
 	{
 		float *position;
@@ -40,6 +41,12 @@ int main(int argc, char **argv)
 	Points points;
 	points.position = new (ALIGNMENT) float[numPoints];
 	points.speed = new (ALIGNMENT) float[numPoints];
+
+	// Some compilers require the below (C++20 feature) to "see" the alignment for optimization
+#if __cpp_lib_assume_aligned
+	points.position = std::assume_aligned<ALIGNMENT_SIZE>(points.position);
+	points.speed = std::assume_aligned<ALIGNMENT_SIZE>(points.speed);
+#endif
 
 	// Create pseudo-random points so the result doesn't get optimized to a constant
 	for (size_t i = 0; i < numPoints; i++)
