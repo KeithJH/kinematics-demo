@@ -48,9 +48,9 @@ Looking at `clang++` (version 18.1.3), we also see the same general progression 
 Even with no optimization we actualy get somewhat usable assembly!
 
 ```
-<snip>
 $ perf record -D 100 ./out/gcc/O0/default/StructOfPointer
 $ perf report -Mintel
+<snip>
        │239:   mov      QWORD PTR [rbp-0x38],0x0
        │     ↓ jmp      335
   3.01 │246:   mov      rax,QWORD PTR [rbp-0x20]

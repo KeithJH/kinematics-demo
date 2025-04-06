@@ -1,4 +1,4 @@
-# StructOfAligned
+# Aligned
 SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment, in the hopes that instructions that rely on alignment are used and improve performance.
 
 ```
@@ -40,7 +40,6 @@ for (size_t point = 0; point < numPoints; point++)
 | clang    | O3           | native       |       760 |
 
 The test system (Zen 4) may not be sensitive to alignment as the results appear just about the same as in `StructOfPointer`
-
 
 ## Assembly Analysis
 ### g++ -O0
