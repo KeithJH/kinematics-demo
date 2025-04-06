@@ -32,6 +32,7 @@ Small, independent, (re)implementations scoped down to more easily inspect the g
 * [StructOfPointer](./notes/minimal/StructOfPointer.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]`.
 * [Aligned](./notes/minimal/Aligned.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment.
 * [Oversized](./notes/minimal/Oversized.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment and ensuring adequate capacity that allows for vector commands to "overrun" the actual amount of `Points` in the calculation to avoid non-vectorized "tail" calculations.
+* [Hybrid](./notes/minimal/Hybrid.md): Hybrid approach that uses an array of structures of arrays (AoSoA), still manually managed with `new[]` and `delete[]` while specifying alignment.
 
 ## Building
 Most of the project is set up with `CMake` using `FetchContent` for a few packages.
