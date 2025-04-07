@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	}
 	const auto endTime = std::chrono::steady_clock::now();
 
-	const auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+	const long milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
 	std::printf(" ran for %ldms\n", milliseconds);
 
 	return 0;
