@@ -37,9 +37,9 @@ int main(int argc, char **argv)
 
 	// Allocate memory for points
 	constexpr size_t ALIGNMENT_SIZE = 64;
-	constexpr std::align_val_t ALIGNMENT = std::align_val_t(ALIGNMENT_SIZE);
 	constexpr size_t BLOCK_SIZE = 16;
-	struct PointBlock
+
+	struct alignas(ALIGNMENT_SIZE) PointBlock
 	{
 		float position[BLOCK_SIZE];
 		float speed[BLOCK_SIZE];
@@ -48,12 +48,7 @@ int main(int argc, char **argv)
 	PointBlock *points;
 
 	const size_t numPointBlocks = (numPoints + BLOCK_SIZE - 1) / BLOCK_SIZE;
-	points = new (ALIGNMENT) PointBlock[numPointBlocks];
-
-	// Some compilers require the below (C++20 feature) to "see" the alignment for optimization
-#if __cpp_lib_assume_aligned
-	points = std::assume_aligned<ALIGNMENT_SIZE>(points);
-#endif
+	points = new PointBlock[numPointBlocks];
 
 	// Create pseudo-random points so the result doesn't get optimized to a constant
 	for (size_t i = 0; i < numPoints; i++)
@@ -91,7 +86,7 @@ int main(int argc, char **argv)
 	std::printf(" ran for %ldms\n", milliseconds);
 
 	// Free memory for points
-	::operator delete[](points, ALIGNMENT);
+	delete[] points;
 
 	return 0;
 }
