@@ -1,6 +1,8 @@
 # Hybrid
 Hybrid approach that uses an array of structures of arrays (AoSoA), still manually managed with `new[]` and `delete[]` while specifying alignment. This should make it easier for optimizers to see that no tail calculations are needed.
 
+In order to remain fairly generic we always ensure at least 16 `float` values can be operated on at a time, which is the largest requirement on systems tested (for 512-byte `zmm` registers of 32-bit single precision floats).
+
 ```
 constexpr size_t BLOCK_SIZE = 16;
 struct PointBlock

@@ -1,6 +1,8 @@
 # Oversized
 SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment and ensuring adequate capacity that allows for vector commands to "overrun" the actual amount of `Points` in the calculation to avoid non-vectorized "tail" calculations.
 
+In order to remain fairly generic we always ensure at least 16 `float` values can be operated on at a time, which is the largest requirement on systems tested (for 512-byte `zmm` registers of 32-bit single precision floats).
+
 ```
 struct Points
 {

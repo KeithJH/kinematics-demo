@@ -1,6 +1,8 @@
 # Aligned
 SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment, in the hopes that instructions that rely on alignment are used and improve performance.
 
+In order to remain fairly generic a constant 64-byte alignment is used, which is the largest requirement on systems tested (for 512-byte `zmm` registers). This could technically be decreased for some systems, and may need to be increased for others.
+
 ```
 struct Points
 {
