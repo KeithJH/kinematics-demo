@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	const auto startTime = std::chrono::steady_clock::now();
 	for (size_t iteration = 0; iteration < numIterations; iteration++)
 	{
-		for (auto &point : points)
+		for (Point &point : points)
 		{
 			point.position += point.speed * DELTA_TIME;
 
