@@ -39,7 +39,7 @@ Most of the project is set up with `CMake` using `FetchContent` for a few packag
 * [`Catch2`](https://github.com/catchorg/Catch2) is used for benchmarking and a touch of testing
 * [`raylib`](https://github.com/raysan5/raylib) is used for graphics
 
-Implementations in `minimal` do not have any dependencies and can be easily compiled with `make` or standalone compilers.
+Implementations in `minimal` do not have any dependencies and can be easily compiled with `make` or standalone compilers as long as C++17 is supported/specified.
 
 ### `kinematics`, `gui`, `bench`
 Linux presets are created for `g++` and `clang++`:

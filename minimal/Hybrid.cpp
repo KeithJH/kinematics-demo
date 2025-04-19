@@ -45,10 +45,10 @@ int main(int argc, char **argv)
 		float speed[BLOCK_SIZE];
 	};
 
-	PointBlock *points;
+	PointBlock *pointBlocks;
 
 	const size_t numPointBlocks = (numPoints + BLOCK_SIZE - 1) / BLOCK_SIZE;
-	points = new PointBlock[numPointBlocks];
+	pointBlocks = new PointBlock[numPointBlocks];
 
 	// Create pseudo-random points so the result doesn't get optimized to a constant
 	for (size_t i = 0; i < numPoints; i++)
@@ -56,8 +56,8 @@ int main(int argc, char **argv)
 		const float position = static_cast<float>(rand() % 100);
 		const float speed = static_cast<float>(rand() % 1000) / 100.f;
 
-		points[i / BLOCK_SIZE].position[i % BLOCK_SIZE] = position;
-		points[i / BLOCK_SIZE].speed[i % BLOCK_SIZE] = speed;
+		pointBlocks[i / BLOCK_SIZE].position[i % BLOCK_SIZE] = position;
+		pointBlocks[i / BLOCK_SIZE].speed[i % BLOCK_SIZE] = speed;
 	}
 
 	// Time the actual update loop
@@ -70,12 +70,12 @@ int main(int argc, char **argv)
 		{
 			for (size_t point = 0; point < BLOCK_SIZE; point++)
 			{
-				points[block].position[point] += points[block].speed[point] * DELTA_TIME;
+				pointBlocks[block].position[point] += pointBlocks[block].speed[point] * DELTA_TIME;
 
-				if ((points[block].position[point] < 0 && points[block].speed[point] < 0) ||
-				    (points[block].position[point] > POSITION_LIMIT && points[block].speed[point] > 0))
+				if ((pointBlocks[block].position[point] < 0 && pointBlocks[block].speed[point] < 0) ||
+				    (pointBlocks[block].position[point] > POSITION_LIMIT && pointBlocks[block].speed[point] > 0))
 				{
-					points[block].speed[point] *= -1;
+					pointBlocks[block].speed[point] *= -1;
 				}
 			}
 		}
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 	std::printf(" ran for %ldms\n", milliseconds);
 
 	// Free memory for points
-	delete[] points;
+	delete[] pointBlocks;
 
 	return 0;
 }
