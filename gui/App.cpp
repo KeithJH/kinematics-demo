@@ -5,7 +5,7 @@
 #include "App.h"
 
 App::App(const float width, const float height, const size_t initialNumBodies)
-	: _simulation(std::make_unique<kinematics::VectorOfStructSim>(width, height, initialNumBodies))
+	: _simulation(std::make_unique<kinematics::ShaderSim>(width, height, initialNumBodies))
 {
 	if (initialNumBodies >= 1'000'000)
 	{

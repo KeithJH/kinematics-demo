@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <external/glad.h>
 #include <raylib.h>
 #include <vector>
 
@@ -71,7 +72,7 @@ class Simulation
 	RenderTexture2D _bodyRender;
 };
 
-class VectorOfStructSim final: public Simulation
+class VectorOfStructSim final : public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -124,7 +125,7 @@ class StructOfVectorSim : public Simulation
 	Bodies _bodies;
 };
 
-class OmpSimdSim final: public StructOfVectorSim
+class OmpSimdSim final : public StructOfVectorSim
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -138,7 +139,7 @@ class OmpSimdSim final: public StructOfVectorSim
 	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) final;
 };
 
-class OmpForSim final: public StructOfVectorSim
+class OmpForSim final : public StructOfVectorSim
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -152,7 +153,7 @@ class OmpForSim final: public StructOfVectorSim
 	                  float *__restrict__ bodiesHorizontalSpeed, float *__restrict__ bodiesVerticalSpeed) final;
 };
 
-class StructOfPointerSim final: public Simulation
+class StructOfPointerSim final : public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -186,7 +187,7 @@ class StructOfPointerSim final: public Simulation
 };
 
 // TODO: Could refactor for less duplication with StructOfPointerSim
-class StructOfAlignedSim final: public Simulation
+class StructOfAlignedSim final : public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -223,7 +224,7 @@ class StructOfAlignedSim final: public Simulation
 };
 
 // TODO: Could refactor for less duplication with StructOfAlignedSim
-class StructOfOversizedSim final: public Simulation
+class StructOfOversizedSim final : public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -260,7 +261,7 @@ class StructOfOversizedSim final: public Simulation
 	size_t _updateBoundary;
 };
 
-template <size_t MAX_SIZE> class StructOfArraySim final: public Simulation
+template <size_t MAX_SIZE> class StructOfArraySim final : public Simulation
 {
   public:
 	/// @param numBodies The number of bodies to initially add to the simulation
@@ -290,4 +291,32 @@ template <size_t MAX_SIZE> class StructOfArraySim final: public Simulation
 	Bodies _bodies;
 	size_t _numBodies;
 };
+
+class ShaderSim final : public Simulation
+{
+  public:
+	/// @param numBodies The number of bodies to initially add to the simulation
+	ShaderSim(const float width, const float height, const size_t numBodies);
+
+	/// @param toCopy Simulation containing the bodies to initially copy to this simulation. The originals will not be
+	/// modified.
+	ShaderSim(const float width, const float height, const Simulation &toCopy);
+
+	~ShaderSim();
+
+	void Update(const float deltaTime) override;
+	void Draw() const override;
+	void SetNumBodies(const size_t totalNumBodies) override;
+	size_t GetNumBodies() const override;
+	std::vector<Body> GetBodies() const override;
+
+  private:
+	void AddRandomBody() override;
+
+  private:
+	std::vector<Body> _bodies;
+	Shader _shader;
+	GLuint _vao, _vbo;
+};
+
 } // namespace kinematics
