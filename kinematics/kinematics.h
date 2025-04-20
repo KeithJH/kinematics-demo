@@ -315,7 +315,8 @@ class ShaderSim final : public Simulation
 
   private:
 	std::vector<Body> _bodies;
-	Shader _shader;
+	Shader _graphicsShader;
+	GLuint _computeShader, _computeProgram;
 	GLuint _vao, _vbo;
 };
 

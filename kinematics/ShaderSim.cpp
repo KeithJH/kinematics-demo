@@ -9,27 +9,31 @@
 
 namespace kinematics
 {
-ShaderSim::ShaderSim(const float width, const float height, const size_t numBodies)
-	: Simulation(width, height)
+ShaderSim::ShaderSim(const float width, const float height, const size_t numBodies) : Simulation(width, height)
 {
-	_shader = LoadShader(0, "shaders/fragment.glsl");
+	_graphicsShader = LoadShader(0, "shaders/fragment.glsl");
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
 
 	glGenBuffers(1, &_vbo);
 	SetNumBodies(numBodies);
 
-	glVertexAttribPointer(static_cast<GLuint>(_shader.locs[SHADER_LOC_VERTEX_POSITION]), 2, GL_FLOAT, false,
+	glVertexAttribPointer(static_cast<GLuint>(_graphicsShader.locs[SHADER_LOC_VERTEX_POSITION]), 2, GL_FLOAT, false,
 	                      sizeof(Body), 0);
 
-	glVertexAttribPointer(static_cast<GLuint>(_shader.locs[SHADER_LOC_VERTEX_COLOR]), 4, GL_UNSIGNED_BYTE, true,
+	glVertexAttribPointer(static_cast<GLuint>(_graphicsShader.locs[SHADER_LOC_VERTEX_COLOR]), 4, GL_UNSIGNED_BYTE, true,
 	                      sizeof(Body), reinterpret_cast<void *>(offsetof(Body, color)));
 
-	glEnableVertexAttribArray(static_cast<GLuint>(_shader.locs[SHADER_LOC_VERTEX_POSITION]));
-	glEnableVertexAttribArray(static_cast<GLuint>(_shader.locs[SHADER_LOC_VERTEX_COLOR]));
+	glEnableVertexAttribArray(static_cast<GLuint>(_graphicsShader.locs[SHADER_LOC_VERTEX_POSITION]));
+	glEnableVertexAttribArray(static_cast<GLuint>(_graphicsShader.locs[SHADER_LOC_VERTEX_COLOR]));
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	char *computeShaderContent = LoadFileText("shaders/compute.glsl");
+	_computeShader = rlCompileShader(computeShaderContent, RL_COMPUTE_SHADER);
+	_computeProgram = rlLoadComputeShaderProgram(_computeShader);
+	UnloadFileText(computeShaderContent);
 
 	while (auto error = glGetError())
 	{
@@ -42,12 +46,14 @@ ShaderSim::~ShaderSim()
 	glDeleteBuffers(1, &_vbo);
 	glDeleteVertexArrays(1, &_vao);
 
-	UnloadShader(_shader);
+	glDeleteShader(_computeShader);
+	glDeleteProgram(_computeProgram);
+	UnloadShader(_graphicsShader);
 }
 
-ShaderSim::ShaderSim(const float width, const float height, const Simulation &toCopy)
-	: Simulation(width, height)
+ShaderSim::ShaderSim(const float width, const float height, const Simulation &toCopy) : Simulation(width, height)
 {
+	//TODO: Needs updating like above
 	for (const auto &body : toCopy.GetBodies())
 	{
 		_bodies.push_back(body);
@@ -56,6 +62,7 @@ ShaderSim::ShaderSim(const float width, const float height, const Simulation &to
 
 std::vector<Body> ShaderSim::GetBodies() const
 {
+	//TODO: doesn't copy from GPU memory
 	std::vector<Body> copy;
 	copy.reserve(GetNumBodies());
 
@@ -69,27 +76,32 @@ std::vector<Body> ShaderSim::GetBodies() const
 
 void ShaderSim::Update(const float deltaTime)
 {
-	for (auto &body : _bodies)
+	glUseProgram(_computeProgram);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _vbo);
+	glUniform1f(1, deltaTime);
+	glUniform1f(2, _width);
+	glUniform1f(3, _height);
+
+	const size_t numBodies = _bodies.size();
+	glUniform1ui(4, static_cast<GLuint>(numBodies));
+
+	GLuint numWorkGroupsX = static_cast<GLuint>(numBodies);
+	GLuint numWorkGroupsY = 1;
+
+	constexpr int WORKGROUP_LIMIT = 1 << 16;
+	if (numWorkGroupsX > WORKGROUP_LIMIT)
 	{
-		// Update position based on speed
-		body.x += body.horizontalSpeed * deltaTime;
-		body.y += body.verticalSpeed * deltaTime;
-
-		// Bounce horizontally
-		if (BounceCheck(body.x, body.horizontalSpeed, _width))
-		{
-			body.horizontalSpeed *= -1;
-		}
-
-		// Bounce vertically
-		if (BounceCheck(body.y, body.verticalSpeed, _height))
-		{
-			body.verticalSpeed *= -1;
-		}
+		numWorkGroupsX = WORKGROUP_LIMIT;
+		numWorkGroupsY = static_cast<GLuint>((numBodies + WORKGROUP_LIMIT - 1) / WORKGROUP_LIMIT);
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(sizeof(Body) * _bodies.size()), _bodies.data());
+	// TODO: test with higher local sizes as well
+	glDispatchCompute(numWorkGroupsX, numWorkGroupsY, 1);
+	glUseProgram(0);
+
+	// TODO: are either of these necessary, or help with timing?
+	//glMemoryBarrier(GL_ALL_BARRIER_BITS);
+	//glFinish();
 }
 
 void ShaderSim::Draw() const
@@ -99,11 +111,11 @@ void ShaderSim::Draw() const
 
 	rlDrawRenderBatchActive();
 
-	glUseProgram(_shader.id);
+	glUseProgram(_graphicsShader.id);
 
 	Matrix modelViewProjection = rlGetMatrixProjection();
 
-	glUniformMatrix4fv(_shader.locs[SHADER_LOC_MATRIX_MVP], 1, false, MatrixToFloat(modelViewProjection));
+	glUniformMatrix4fv(_graphicsShader.locs[SHADER_LOC_MATRIX_MVP], 1, false, MatrixToFloat(modelViewProjection));
 
 	glBindVertexArray(_vao);
 	glPointSize(20);
@@ -123,6 +135,7 @@ void ShaderSim::SetNumBodies(const size_t totalNumBodies)
 {
 	if (totalNumBodies > GetNumBodies())
 	{
+		// TODO: we don't really need CPU buffer, if we have similar shader functionality
 		_bodies.reserve(totalNumBodies);
 		for (auto i = GetNumBodies(); i < totalNumBodies; i++)
 		{
