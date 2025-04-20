@@ -76,6 +76,9 @@ std::vector<Body> ShaderSim::GetBodies() const
 
 void ShaderSim::Update(const float deltaTime)
 {
+	constexpr unsigned WORKGROUP_SIZE = 1;
+	constexpr unsigned WORKGROUP_LIMIT = 1 << 16;
+
 	glUseProgram(_computeProgram);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _vbo);
 	glUniform1f(1, deltaTime);
@@ -85,22 +88,20 @@ void ShaderSim::Update(const float deltaTime)
 	const size_t numBodies = _bodies.size();
 	glUniform1ui(4, static_cast<GLuint>(numBodies));
 
-	GLuint numWorkGroupsX = static_cast<GLuint>(numBodies);
+	const size_t numWorkGroups = (numBodies + WORKGROUP_SIZE - 1) / WORKGROUP_SIZE;
+	GLuint numWorkGroupsX = static_cast<GLuint>(numWorkGroups);
 	GLuint numWorkGroupsY = 1;
 
-	constexpr int WORKGROUP_LIMIT = 1 << 16;
 	if (numWorkGroupsX > WORKGROUP_LIMIT)
 	{
 		numWorkGroupsX = WORKGROUP_LIMIT;
-		numWorkGroupsY = static_cast<GLuint>((numBodies + WORKGROUP_LIMIT - 1) / WORKGROUP_LIMIT);
+		numWorkGroupsY = static_cast<GLuint>((numWorkGroups + WORKGROUP_LIMIT - 1) / WORKGROUP_LIMIT);
 	}
 
-	// TODO: test with higher local sizes as well
 	glDispatchCompute(numWorkGroupsX, numWorkGroupsY, 1);
 	glUseProgram(0);
 
-	// TODO: are either of these necessary, or help with timing?
-	//glMemoryBarrier(GL_ALL_BARRIER_BITS);
+	// TODO: Helps with timing?
 	//glFinish();
 }
 
@@ -119,7 +120,10 @@ void ShaderSim::Draw() const
 
 	glBindVertexArray(_vao);
 	glPointSize(20);
+
+	glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 	glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(_bodies.size()));
+
 	glBindVertexArray(0);
 	glUseProgram(0);
 

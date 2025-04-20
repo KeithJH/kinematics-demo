@@ -28,13 +28,12 @@ bool BounceCheck(const float position, const float speed, const float bounds)
 
 void main()
 {
-	uint i = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * gl_NumWorkGroups.x;
+	uint i = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * gl_NumWorkGroups.x * gl_WorkGroupSize.x;
 	if (i < numBodies)
 	{
 		body[i].x += deltaTime * body[i].horizontalSpeed;
 		body[i].y += deltaTime * body[i].verticalSpeed;
 
-		// TODO: better way avoiding if?
 		if (BounceCheck(body[i].x, body[i].horizontalSpeed, horizontalBounds))
 		{
 			body[i].horizontalSpeed *= -1;
