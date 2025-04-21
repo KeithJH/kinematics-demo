@@ -135,7 +135,7 @@ void ShaderSim::SetNumBodies(const size_t totalNumBodies)
 
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Body) * _bodies.size()), _bodies.data(),
-		             GL_STREAM_DRAW);
+		             GL_DYNAMIC_COPY);
 	}
 	else
 	{
