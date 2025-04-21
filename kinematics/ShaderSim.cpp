@@ -63,7 +63,7 @@ std::vector<Body> ShaderSim::GetBodies() const
 
 void ShaderSim::Update(const float deltaTime)
 {
-	constexpr unsigned WORKGROUP_SIZE = 1;
+	constexpr unsigned WORKGROUP_SIZE = 1024;
 	constexpr unsigned WORKGROUP_LIMIT = 1 << 16;
 
 	glUseProgram(_computeProgram);
