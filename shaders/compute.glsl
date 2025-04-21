@@ -10,7 +10,7 @@ struct Body
 	uint color;
 };
 
-layout (binding = 0) buffer vbo
+layout (binding = 0) restrict buffer vbo
 {
 	Body body[];
 };
@@ -20,7 +20,7 @@ layout (location = 2) uniform float horizontalBounds;
 layout (location = 3) uniform float verticalBounds;
 layout (location = 4) uniform uint numBodies;
 
-const int BODY_RADIUS = 10;
+const float BODY_RADIUS = 10.0f;
 bool BounceCheck(const float position, const float speed, const float bounds)
 {
 	return (position - BODY_RADIUS < 0 && speed < 0) || (position + BODY_RADIUS > bounds && speed > 0);

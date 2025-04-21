@@ -298,10 +298,6 @@ class ShaderSim final : public Simulation
 	/// @param numBodies The number of bodies to initially add to the simulation
 	ShaderSim(const float width, const float height, const size_t numBodies);
 
-	/// @param toCopy Simulation containing the bodies to initially copy to this simulation. The originals will not be
-	/// modified.
-	ShaderSim(const float width, const float height, const Simulation &toCopy);
-
 	~ShaderSim();
 
 	void Update(const float deltaTime) override;

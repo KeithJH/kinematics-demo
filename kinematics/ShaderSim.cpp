@@ -51,25 +51,12 @@ ShaderSim::~ShaderSim()
 	UnloadShader(_graphicsShader);
 }
 
-ShaderSim::ShaderSim(const float width, const float height, const Simulation &toCopy) : Simulation(width, height)
-{
-	//TODO: Needs updating like above
-	for (const auto &body : toCopy.GetBodies())
-	{
-		_bodies.push_back(body);
-	}
-}
-
 std::vector<Body> ShaderSim::GetBodies() const
 {
-	//TODO: doesn't copy from GPU memory
-	std::vector<Body> copy;
-	copy.reserve(GetNumBodies());
+	std::vector<Body> copy(GetNumBodies());
 
-	for (const auto &body : _bodies)
-	{
-		copy.emplace_back(body.x, body.y, body.horizontalSpeed, body.verticalSpeed, body.color);
-	}
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _vbo);
+	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, static_cast<GLsizeiptr>(sizeof(Body) * copy.size()), copy.data());
 
 	return copy;
 }
