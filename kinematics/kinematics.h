@@ -310,7 +310,8 @@ class ShaderSim final : public Simulation
 	void AddRandomBody() override;
 
   private:
-	std::vector<Body> _bodies;
+	size_t _numBodies;
+	size_t _maxBodies;
 	Shader _graphicsShader;
 	GLuint _computeShader, _computeProgram;
 	GLuint _vao, _vbo;

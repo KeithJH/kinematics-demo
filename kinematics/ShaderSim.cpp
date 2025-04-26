@@ -9,7 +9,8 @@
 
 namespace kinematics
 {
-ShaderSim::ShaderSim(const float width, const float height, const size_t numBodies) : Simulation(width, height)
+ShaderSim::ShaderSim(const float width, const float height, const size_t numBodies)
+	: Simulation(width, height), _numBodies(0), _maxBodies(0)
 {
 	_graphicsShader = LoadShader(0, "shaders/fragment.glsl");
 	glGenVertexArrays(1, &_vao);
@@ -72,7 +73,7 @@ void ShaderSim::Update(const float deltaTime)
 	glUniform1f(2, _width);
 	glUniform1f(3, _height);
 
-	const size_t numBodies = _bodies.size();
+	const size_t numBodies = _numBodies;
 	glUniform1ui(4, static_cast<GLuint>(numBodies));
 
 	const size_t numWorkGroups = (numBodies + WORKGROUP_SIZE - 1) / WORKGROUP_SIZE;
@@ -87,9 +88,6 @@ void ShaderSim::Update(const float deltaTime)
 
 	glDispatchCompute(numWorkGroupsX, numWorkGroupsY, 1);
 	glUseProgram(0);
-
-	// TODO: Helps with timing?
-	//glFinish();
 }
 
 void ShaderSim::Draw() const
@@ -109,7 +107,7 @@ void ShaderSim::Draw() const
 	glPointSize(20);
 
 	glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
-	glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(_bodies.size()));
+	glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(_numBodies));
 
 	glBindVertexArray(0);
 	glUseProgram(0);
@@ -124,26 +122,28 @@ void ShaderSim::Draw() const
 
 void ShaderSim::SetNumBodies(const size_t totalNumBodies)
 {
-	if (totalNumBodies > GetNumBodies())
+	if (totalNumBodies > _maxBodies)
 	{
 		// TODO: we don't really need CPU buffer, if we have similar shader functionality
-		_bodies.reserve(totalNumBodies);
+		std::vector<Body> bodies = GetBodies();
+		bodies.reserve(totalNumBodies);
+
 		for (auto i = GetNumBodies(); i < totalNumBodies; i++)
 		{
-			AddRandomBody();
+			bodies.push_back(GenerateRandomBody());
 		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Body) * _bodies.size()), _bodies.data(),
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Body) * totalNumBodies), bodies.data(),
 		             GL_DYNAMIC_COPY);
+
+		_maxBodies = totalNumBodies;
 	}
-	else
-	{
-		_bodies.resize(totalNumBodies);
-	}
+
+	_numBodies = totalNumBodies;
 }
 
-size_t ShaderSim::GetNumBodies() const { return _bodies.size(); }
+size_t ShaderSim::GetNumBodies() const { return _numBodies; }
 
-void ShaderSim::AddRandomBody() { _bodies.push_back(GenerateRandomBody()); }
+void ShaderSim::AddRandomBody() {}
 } // namespace kinematics
