@@ -34,6 +34,10 @@ Small, independent, (re)implementations scoped down to more easily inspect the g
 * [Oversized](./notes/minimal/Oversized.md): SoA layout that uses `float*` fields manually managed with `new[]` and `delete[]` while specifying alignment and ensuring adequate capacity that allows for vector commands to "overrun" the actual amount of `Points` in the calculation to avoid non-vectorized "tail" calculations.
 * [Hybrid](./notes/minimal/Hybrid.md): Hybrid approach that uses an array of structures of arrays (AoSoA), still manually managed with `new[]` and `delete[]` while specifying alignment.
 
+_Note: Since these solutions don't use a benchmarking framework they are susceptible to "over" optimization where the compiler removes work we intend to actually time. It appears likely that some solutions skip storing to memory half the time._
+
+_**TODO**: Investigate adding an empty assembly block (`asm("")`) to timing loop and re-evaluate._
+
 ## Building
 Most of the project is set up with `CMake` using `FetchContent` for a few packages.
 * [`Catch2`](https://github.com/catchorg/Catch2) is used for benchmarking and a touch of testing

@@ -221,6 +221,8 @@ $ perf report -Mintel
 ### g++ -O3 -march=native
 Once we start compiling for the native architecture (on a Zen 4 test system) we even start to see "true" vectorization, including FMA commands. Notably there is no shuffling of data required, as there was with the AoS solutions. Without digging in, it may also be unrolling the loop with two `vfmadd231ps` instructions (ignoring duplicate "versions" for "tail" computations not shown here).
 
+**TODO**: This unrolling actually appears to be skipping some store operations and is evident in many solutions. Investigate adding an empty assembly block (`asm("")`) to timing loop and re-evaluate.
+
 ```
 $ perf record -D 100 ./out/gcc/O3/native/StructOfPointer
 $ perf report -Mintel
