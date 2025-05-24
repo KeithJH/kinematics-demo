@@ -9,6 +9,17 @@
 
 namespace kinematics
 {
+
+// Rough helper to print OpenGL erros.
+// Should only be used for testing, or made more robust.
+void printGlErrors()
+{
+	while (auto error = glGetError())
+	{
+		std::printf("error: %d\n", error);
+	}
+}
+
 ShaderSim::ShaderSim(const float width, const float height, const size_t numBodies)
 	: Simulation(width, height), _numBodies(0), _maxBodies(0)
 {
@@ -36,10 +47,7 @@ ShaderSim::ShaderSim(const float width, const float height, const size_t numBodi
 	_computeProgram = rlLoadComputeShaderProgram(_computeShader);
 	UnloadFileText(computeShaderContent);
 
-	while (auto error = glGetError())
-	{
-		std::printf("error: %d\n", error);
-	}
+	printGlErrors();
 }
 
 ShaderSim::~ShaderSim()
@@ -112,12 +120,7 @@ void ShaderSim::Draw() const
 	glBindVertexArray(0);
 	glUseProgram(0);
 
-	/*
-	while (auto error = glGetError())
-	{
-	    std::printf("error: %d\n", error);
-	}
-	*/
+	// printGlErrors();
 }
 
 void ShaderSim::SetNumBodies(const size_t totalNumBodies)
