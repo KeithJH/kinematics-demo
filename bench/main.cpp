@@ -3,7 +3,7 @@
 #include <raylib.h>
 #include <string>
 
-#include "../kinematics/kinematics.h"
+#include <kinematics.h>
 
 TEST_CASE("Update", "[update]")
 {

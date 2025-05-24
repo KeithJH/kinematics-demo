@@ -1,5 +1,5 @@
 #pragma once
-#include "../kinematics/kinematics.h"
+#include <kinematics.h>
 #include <memory>
 
 class App
