@@ -3,6 +3,9 @@
 Inspired by "Bunnymark" benchmarks, such as the [textures example from raylib](https://www.raylib.com/examples/textures/loader.html?name=textures_bunnymark), this project aims to dive into the rabbit hole of optimization topics around the kinematics of simple 2D motion. This is not the limiting factor for most such benchmarks, but presents an interesting opportunity to compare implementations, compilers, and compiler flags. Of particular interest when starting the project was compilers' ability to auto-vectorize code depending on how the data is stored in memory.
 
 ## Structure
+### `videos`
+Refined minimal examples covered in [4x Code Performance with SIMD](https://youtu.be/Imj4ROIiMw0)
+
 ### `kinematics`
 Library with full implementations for drawing and updating a simulation of numerous bodies (circles) that bounce around the environment.
 
@@ -66,6 +69,20 @@ The project can then be built with:
 $ cmake --build out/build/release/
 ```
 
+### `videos/simd`
+The `Makefile` provides the following targets:
+* `build`: compiles all the implementations
+* `clean-build`: removes the created binaries
+* `run`: runs each of the implementations
+* `results`: runs each of the implementations while collecting some statistics
+* `clean-results`: removes the created results files
+
+And uses the following optional variables:
+* `CXX`: The C++ compiler to use (or system default)
+* `CXX_FLAGS`: The flags to pass to the compiler (or system default)
+* `OUT`: Directory for outputs (or default of `./out`)
+* `RUN_ARGS`: Arguments used to run the implementations (or default of `1000000 10000`)
+
 ### `minimal`
 The `Makefile` provides the following targets:
 * `all` (default): compiles all the implementations
@@ -90,6 +107,17 @@ $ ./make.sh all
 ```
 
 ## Running
+### `videos/simd`
+If compiling with the given `Makefile` one can use the `run` target to run each of the implementations with the default arguments that runs 10,000 update loops of 1,000,000 points.
+```
+$ make run
+```
+
+If running a given implementation from the command line one must specify the number of update loops and number of points such as:
+```
+$ ./out/03_soa <number_of_points> <number_of_update_loops>
+```
+
 ### `gui`
 The application has one optional command line argument to specify the number of bodies to start the simulation with, otherwise the simulation starts with a single body. If the initial count is high enough rendering of the bodies is also disabled.
 
