@@ -16,3 +16,4 @@ set_property(TARGET lto PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 add_subdirectory(01_aos)
 add_subdirectory(02_large_structure)
+add_subdirectory(03_soa)
