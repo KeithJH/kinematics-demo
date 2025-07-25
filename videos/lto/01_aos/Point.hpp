@@ -8,7 +8,8 @@ constexpr inline float VELOCITY_LIMIT = POSITION_LIMIT / 100;
 
 struct Point
 {
-private:
+// Made public for "manual inline" demonstration
+public:
 	float _position;
 	float _velocity;
 
