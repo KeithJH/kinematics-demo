@@ -13,3 +13,4 @@ target_link_libraries(bench benchmark::benchmark_main)
 
 add_subdirectory(01_local_points)
 add_subdirectory(02_local_atomic_points)
+add_subdirectory(03_global_atomic_points)

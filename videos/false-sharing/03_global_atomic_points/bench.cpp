@@ -1,0 +1,52 @@
+#include <array>
+#include <atomic>
+#include <benchmark/benchmark.h>
+#include <cstddef>
+
+constexpr size_t MAX_THREADS = 8;
+constexpr size_t NUM_POINTS_PER_THREAD = 8;
+constexpr float DELTA_TIME = 1.f/60;
+
+namespace _03_global_atomic_points {
+struct Point
+{
+	std::atomic<float> position = 1.23f;
+	std::atomic<float> velocity = 4.56f;
+
+	void Update()
+	{
+		position.fetch_add(velocity * DELTA_TIME, std::memory_order_relaxed);
+	}
+};
+
+struct Points
+{
+private:
+	std::array<Point, NUM_POINTS_PER_THREAD * MAX_THREADS> _values;
+
+public:
+	void Update(const size_t threadId)
+	{
+		for (size_t i = threadId; i < _values.size(); i += MAX_THREADS)
+		{
+			_values[i].Update();
+		}
+	}
+};
+
+Points globalPoints {};
+
+static void Update(benchmark::State& state)
+{
+	const size_t threadId = static_cast<size_t>(state.thread_index());
+
+	benchmark::DoNotOptimize(globalPoints);
+	for (auto _ : state)
+	{
+		globalPoints.Update(threadId);
+		benchmark::ClobberMemory();
+	}
+}
+}
+
+BENCHMARK(_03_global_atomic_points::Update)->UseRealTime()->ThreadRange(1, MAX_THREADS);
