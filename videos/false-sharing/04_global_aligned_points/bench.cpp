@@ -71,4 +71,4 @@ static void UpdateByChunk(benchmark::State& state)
 }
 
 BENCHMARK(_04_global_aligned_points::UpdateByStride)->UseRealTime()->ThreadRange(1, MAX_THREADS);
-BENCHMARK(_04_global_aligned_points::UpdateByChunk)->UseRealTime()->ThreadRange(1, MAX_THREADS);
+BENCHMARK(_04_global_aligned_points::UpdateByChunk)->UseRealTime()->Threads(MAX_THREADS);

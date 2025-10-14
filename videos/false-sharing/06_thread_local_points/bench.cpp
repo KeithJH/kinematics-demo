@@ -47,4 +47,4 @@ static void Update(benchmark::State& state)
 }
 }
 
-BENCHMARK(_06_thread_local_points::Update)->UseRealTime()->ThreadRange(1, MAX_THREADS);
+BENCHMARK(_06_thread_local_points::Update)->UseRealTime()->Threads(MAX_THREADS);

@@ -36,4 +36,5 @@ static void Update(benchmark::State& state)
 }
 }
 
-BENCHMARK(_02_local_atomic_points::Update)->UseRealTime()->ThreadRange(1, MAX_THREADS);
+BENCHMARK(_02_local_atomic_points::Update);
+BENCHMARK(_02_local_atomic_points::Update)->UseRealTime()->ThreadRange(2, MAX_THREADS);
