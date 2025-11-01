@@ -27,7 +27,7 @@ static void Update(benchmark::State& state)
 	benchmark::DoNotOptimize(points);
 	for (auto _ : state)
 	{
-		for (auto &point : points)
+		for (Point &point : points)
 		{
 			point.Update();
 		}

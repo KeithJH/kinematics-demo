@@ -19,9 +19,8 @@ struct Point
 	}
 };
 
-struct Points
+class Points
 {
-private:
 	alignas(64) std::array<Point, NUM_POINTS_PER_THREAD * MAX_THREADS> _values;
 
 public:
