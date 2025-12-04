@@ -1,4 +1,9 @@
-add_compile_options( # Adapted from https://github.com/cpp-best-practices/cmake_template/blob/main/cmake/CompilerWarnings.cmake
+if (MSVC)
+  return()
+endif ()
+
+# Adapted from https://github.com/cpp-best-practices/cmake_template/blob/main/cmake/CompilerWarnings.cmake
+add_compile_options(
   -Wall
   -Wextra # reasonable and standard
   -Wshadow # warn the user if a variable declaration shadows one from a parent context

@@ -4,7 +4,9 @@ Inspired by "Bunnymark" benchmarks, such as the [textures example from raylib](h
 
 ## Structure
 ### `videos`
-Refined minimal examples covered in [4x Code Performance with SIMD](https://youtu.be/Imj4ROIiMw0)
+Refined minimal examples covered in:
+* [4x Code Performance with SIMD](https://youtu.be/Imj4ROIiMw0)
+* [Increasing code performance with LTO](https://www.youtube.com/@keiferjh) (Coming Soon)
 
 ### `kinematics`
 Library with full implementations for drawing and updating a simulation of numerous bodies (circles) that bounce around the environment.
@@ -83,6 +85,9 @@ And uses the following optional variables:
 * `OUT`: Directory for outputs (or default of `./out`)
 * `RUN_ARGS`: Arguments used to run the implementations (or default of `1000000 10000`)
 
+### `videos/lto`
+See [README.md](videos/lto/README.md) for more details
+
 ### `minimal`
 The `Makefile` provides the following targets:
 * `all` (default): compiles all the implementations
@@ -117,6 +122,9 @@ If running a given implementation from the command line one must specify the num
 ```
 $ ./out/03_soa <number_of_points> <number_of_update_loops>
 ```
+
+### `videos/lto`
+See [README.md](videos/lto/README.md) for more details
 
 ### `gui`
 The application has one optional command line argument to specify the number of bodies to start the simulation with, otherwise the simulation starts with a single body. If the initial count is high enough rendering of the bodies is also disabled.
