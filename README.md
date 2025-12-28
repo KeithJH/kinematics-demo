@@ -6,7 +6,7 @@ Inspired by "Bunnymark" benchmarks, such as the [textures example from raylib](h
 ### `videos`
 Refined minimal examples covered in:
 * [4x Code Performance with SIMD](https://youtu.be/Imj4ROIiMw0)
-* [Increasing code performance with LTO](https://www.youtube.com/@keiferjh) (Coming Soon)
+* [Increasing code performance with LTO](https://youtu.be/fPGodf5hNoo)
 
 ### `kinematics`
 Library with full implementations for drawing and updating a simulation of numerous bodies (circles) that bounce around the environment.
