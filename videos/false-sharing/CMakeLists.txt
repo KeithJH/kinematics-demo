@@ -1,12 +1,22 @@
 cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(FalseSharing CXX)
-include(./Common.cmake)
 
-find_package(benchmark REQUIRED)
+find_package(benchmark QUIET)
+if (NOT benchmark_FOUND)
+	include(FetchContent)
+	set(BENCHMARK_DOWNLOAD_DEPENDENCIES on)
+	FetchContent_Declare(
+		benchmark
+		GIT_REPOSITORY https://github.com/google/benchmark
+		GIT_TAG v1.9.4
+	)
+	FetchContent_MakeAvailable(benchmark)
+endif ()
+
+include(./Common.cmake)
 
 add_executable(bench)
 target_link_libraries(bench benchmark::benchmark_main)
